@@ -1,0 +1,1793 @@
+<title>Dano</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: Dano 3 · Ovsena. Ena stolpčna mobilna aplikacija (max 640px): fotografija psa v glavi, kartica »Zdaj na vrsti« kot edino glavno dejanje, pod njo seznam dneva; spodaj navigacija. Žajbljeva je poudarek, terakota pomeni zamudo, zelena kljukica opravljeno. */
+:root{
+  --bg:#F5F0E6; --card:#FFFDF8; --ink:#23302A; --muted:#5F665C; --line:#ECE4D6; --edge:#D6CCBB;
+  --sage:#CBD9C4; --sage-soft:#E7EEE2;
+  --hero:#23302A; --on-hero:#FFFDF8; --on-hero-muted:#B3BCB0; --hero-btn:#FFFDF8; --hero-btn-ink:#23302A; --hero-ring:#23302A;
+  --ok:#8CC08A; --ok-ink:#3D6B3A; --on-ok:#1F3320;
+  --late:#E9785E; --late-ink:#A6402A; --late-soft:#FCE3DA; --late-bg:#FFF3EE; --on-late:#23302A;
+  --on-photo:#FFFDF8; --glass:rgba(255,253,248,.24); --shade:rgba(35,48,42,.78);
+  --scrim:rgba(20,28,24,.5);
+  --shadow:0 1px 2px rgba(35,48,42,.05),0 8px 24px rgba(35,48,42,.07);
+  --f:'Barlow','Helvetica Neue',Arial,system-ui,sans-serif;
+  --r-card:22px; --r-tile:16px; --r-field:14px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121815; --card:#1B231E; --ink:#ECE6D8; --muted:#A3AA9E; --line:#29332C; --edge:#3B463E;
+    --sage:#3F5446; --sage-soft:#223029;
+    --hero:#26352C; --on-hero:#FFFDF8; --on-hero-muted:#B4BEB2; --hero-btn:#ECE6D8; --hero-btn-ink:#1B231E; --hero-ring:#26352C;
+    --ok:#8CC08A; --ok-ink:#A8D6A5; --on-ok:#1F3320;
+    --late:#EE8468; --late-ink:#FFA68E; --late-soft:#43271F; --late-bg:#2A1D19; --on-late:#23302A;
+    --on-photo:#FFFDF8; --glass:rgba(255,253,248,.2); --shade:rgba(12,17,14,.8);
+    --scrim:rgba(0,0,0,.6);
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121815; --card:#1B231E; --ink:#ECE6D8; --muted:#A3AA9E; --line:#29332C; --edge:#3B463E;
+  --sage:#3F5446; --sage-soft:#223029;
+  --hero:#26352C; --on-hero:#FFFDF8; --on-hero-muted:#B4BEB2; --hero-btn:#ECE6D8; --hero-btn-ink:#1B231E; --hero-ring:#26352C;
+  --ok:#8CC08A; --ok-ink:#A8D6A5; --on-ok:#1F3320;
+  --late:#EE8468; --late-ink:#FFA68E; --late-soft:#43271F; --late-bg:#2A1D19; --on-late:#23302A;
+  --on-photo:#FFFDF8; --glass:rgba(255,253,248,.2); --shade:rgba(12,17,14,.8);
+  --scrim:rgba(0,0,0,.6);
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/21px var(--f);font-variant-numeric:tabular-nums}
+body[data-mode="app"],body[data-mode="care"]{padding-bottom:calc(92px + env(safe-area-inset-bottom,0px))}
+button{font:inherit;color:inherit;cursor:pointer}
+button[disabled]{cursor:not-allowed}
+a{color:var(--ink)}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+svg{display:block;flex-shrink:0}
+.wrap{max-width:640px;margin-inline:auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.mono{font-variant-numeric:tabular-nums}
+.eyebrow{font:600 13px/16px var(--f);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.hint,.help{font-size:14px;line-height:19px;color:var(--muted)}
+h2{font:700 24px/28px var(--f);margin:0;text-wrap:balance}
+h3{font:600 17px/22px var(--f);margin:0}
+
+/* Glava s fotografijo */
+.phead{position:relative;max-width:640px;margin-inline:auto;height:clamp(236px,64vw,300px);border-radius:0 0 36px 36px;overflow:hidden;background:var(--hero);color:var(--on-photo)}
+.phead > img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 30%}
+.phead::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,var(--shade) 0%,transparent 60%);pointer-events:none}
+.phead.nophoto{background:var(--sage);color:var(--ink)}
+.phead.nophoto::after{display:none}
+.ph-in{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;justify-content:space-between;padding-block:14px 22px;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+.ph-top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.glass{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 12px 0 16px;border:0;border-radius:999px;background:var(--glass);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);color:var(--on-photo);font:600 16px/20px var(--f)}
+.glass svg{width:18px;height:18px}
+.glass.round{width:40px;padding:0;justify-content:center}
+.glass.round svg{width:20px;height:20px}
+.nophoto .glass{background:rgba(35,48,42,.1);color:var(--ink)}
+.nophoto .glass.add{width:auto;padding:0 14px 0 12px;font-size:14px}
+.pet-name{font:700 clamp(44px,15vw,60px)/1 var(--f);letter-spacing:-.015em;margin:0;overflow-wrap:anywhere;text-wrap:balance}
+.pet-meta{font:500 17px/22px var(--f);margin-top:6px;display:flex;flex-wrap:wrap;column-gap:6px}
+.pet-meta span + span::before{content:"·";margin-right:6px}
+.phead.busy > img{opacity:.5}
+
+.banner{margin:14px 0 0;padding:12px 14px;border-radius:16px;font-size:14px;line-height:19px;background:var(--sage-soft);color:var(--ink)}
+.banner.pv{background:var(--ink);color:var(--card);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.banner.pv button{border:1.5px solid currentColor;background:none;color:inherit;border-radius:999px;padding:6px 12px;font-size:14px;font-weight:600;white-space:nowrap}
+
+/* Sekcije */
+.sec{display:grid;gap:14px;padding-block:26px 2px;min-width:0}
+.sec-head{display:flex;align-items:center;justify-content:space-between;gap:10px 12px;flex-wrap:wrap}
+.lead{max-width:44ch;color:var(--muted);margin:0}
+.btns{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+
+/* Danes: povzetek in Zdaj na vrsti */
+.today{display:grid;gap:6px;padding-top:22px}
+.today-sum{font:700 22px/27px var(--f);margin:0;text-wrap:balance}
+.now{background:var(--hero);color:var(--on-hero);border-radius:28px;padding:20px;display:grid;gap:18px;margin-top:16px;min-width:0}
+.now-top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.now .eyebrow{color:var(--on-hero-muted)}
+.now-main{display:flex;gap:16px;align-items:center;min-width:0}
+.now-main > div{min-width:0}
+.now-name{font:700 clamp(34px,11vw,44px)/1.05 var(--f);letter-spacing:-.01em;margin:0;overflow-wrap:anywhere}
+.now-sub{color:var(--on-hero-muted);margin-top:4px}
+.now-who{display:flex;gap:10px;align-items:center;font-size:14px;line-height:19px;color:var(--on-hero-muted)}
+.btn-hero{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:56px;border:0;border-radius:18px;background:var(--hero-btn);color:var(--hero-btn-ink);font:600 16px/20px var(--f);padding:0 16px}
+.btn-hero svg{width:20px;height:20px}
+.btn-hero:active{transform:scale(.985)}
+.now.is-guard{background:var(--late-bg);color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--late)}
+.now.is-guard .eyebrow{color:var(--late-ink)}
+.now.is-guard p{margin:0;font:600 17px/23px var(--f)}
+.now.is-done{background:var(--sage-soft);color:var(--ink)}
+.now.is-done .eyebrow,.now.is-done .now-sub{color:var(--muted)}
+.now.is-done .tile{background:var(--ok);color:var(--on-ok)}
+.tile{width:56px;height:56px;border-radius:var(--r-tile);background:var(--sage);color:var(--ink);display:grid;place-items:center;flex-shrink:0}
+.tile svg{width:26px;height:26px}
+.tile.lg{width:68px;height:68px;border-radius:18px}
+.tile.lg svg{width:30px;height:30px}
+.tile.sm{width:44px;height:44px;border-radius:14px}
+.tile.sm svg{width:22px;height:22px}
+.tile.warn{background:var(--late-soft);color:var(--late-ink)}
+.avs{display:flex;padding-left:8px}
+.avs .av{width:30px;height:30px;font-size:13px;margin-left:-8px;box-shadow:0 0 0 2px var(--hero-ring)}
+
+/* Vpisi dneva */
+.vps{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.vp{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:6px 14px;align-items:center;background:var(--card);border-radius:var(--r-card);padding:14px;box-shadow:var(--shadow)}
+.vp-meta{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font:600 13px/16px var(--f);letter-spacing:.02em;color:var(--muted)}
+.vp-name{font:600 20px/24px var(--f);margin-top:3px;overflow-wrap:anywhere}
+.vp-sub{font-size:14px;line-height:19px;color:var(--muted);margin-top:2px}
+.vp.is-late{box-shadow:inset 0 0 0 1.5px var(--late),var(--shadow)}
+.vp.is-given .vp-name{font-size:17px;line-height:22px}
+.vp.is-given .tile{opacity:.7}
+.circ{width:48px;height:48px;border-radius:50%;border:1.5px solid var(--edge);background:var(--card);color:var(--ink);display:grid;place-items:center;padding:0}
+.circ svg{width:22px;height:22px}
+.circ:active{transform:scale(.94)}
+.vp.is-late .circ{border-color:var(--late);color:var(--late-ink)}
+.vp.is-due .circ{border-color:var(--ink)}
+.done{display:grid;justify-items:center;gap:4px}
+.check{width:44px;height:44px;border-radius:50%;background:var(--ok);color:var(--on-ok);display:grid;place-items:center}
+.check svg{width:22px;height:22px}
+.done.pop .check{animation:checkIn .32s cubic-bezier(.2,1.5,.4,1)}
+@keyframes checkIn{0%{transform:scale(.4);opacity:0}100%{transform:scale(1);opacity:1}}
+.undo{background:none;border:0;padding:2px 4px;font:600 13px/16px var(--f);color:var(--muted);text-decoration:underline;text-underline-offset:3px}
+.note{font-size:13px;line-height:17px;color:var(--muted);margin-top:4px}
+.guard{grid-column:1/-1;margin-top:8px;background:var(--late-bg);color:var(--ink);border-radius:16px;padding:14px;display:grid;gap:12px;box-shadow:inset 0 0 0 1.5px var(--late)}
+.guard p{margin:0;font-weight:600}
+.donegrp{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--card);border:0;border-radius:var(--r-card);padding:14px 16px;box-shadow:var(--shadow)}
+.donegrp .rmain{flex:1}
+.donegrp .chev{width:22px;height:22px;color:var(--muted);transition:transform .2s}
+.donegrp[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.oks{display:flex;padding-left:10px}
+.oks span{width:32px;height:32px;border-radius:50%;background:var(--ok);color:var(--on-ok);display:grid;place-items:center;margin-left:-10px;box-shadow:0 0 0 2px var(--card)}
+.oks svg{width:16px;height:16px}
+
+/* Oznake in gumbi */
+.pill{display:inline-flex;align-items:center;gap:5px;font:600 13px/16px var(--f);padding:6px 10px;border-radius:999px;background:var(--line);color:var(--muted);white-space:nowrap}
+.pill svg{width:15px;height:15px}
+.pill.late{background:var(--late);color:var(--on-late)}
+.pill.warn{background:var(--late-soft);color:var(--late-ink)}
+.pill.ok{background:var(--sage-soft);color:var(--ok-ink)}
+.pill.due{background:var(--ink);color:var(--card)}
+.pill.light{background:var(--hero-btn);color:var(--hero-btn-ink)}
+.pill.edge{background:none;box-shadow:inset 0 0 0 1.5px var(--edge);color:var(--ink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1.5px solid var(--edge);background:var(--card);color:var(--ink);border-radius:999px;padding:0 18px;font:600 15px/20px var(--f);min-height:44px}
+.btn svg{width:18px;height:18px}
+.btn-primary{background:var(--ink);border-color:var(--ink);color:var(--card)}
+.btn-warn{background:var(--ink);border-color:var(--ink);color:var(--card)}
+.btn-danger{color:var(--late-ink);border-color:var(--late-soft)}
+.btn[disabled]{opacity:.5}
+.btn-wide{width:100%;min-height:54px;border-radius:18px;font-size:16px}
+.btn-sm{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--edge);background:var(--card);border-radius:999px;padding:0 14px;min-height:38px;font:600 14px/18px var(--f);color:var(--ink);white-space:nowrap}
+.btn-sm svg{width:17px;height:17px}
+.btn-sm.dark{background:var(--ink);border-color:var(--ink);color:var(--card)}
+.btn-add{display:inline-flex;align-items:center;gap:6px;border:0;background:none;color:var(--ink);font:600 15px/20px var(--f);padding:6px 2px;text-decoration:none}
+.btn-add svg{width:18px;height:18px}
+.link{border:0;background:none;color:var(--muted);font-weight:600;padding:8px;font-size:15px}
+
+/* Seznami in kartice */
+.rows{display:grid;background:var(--card);border-radius:var(--r-card);min-width:0;overflow:hidden;box-shadow:var(--shadow)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.rmain{min-width:0;display:grid;gap:2px;flex:1}
+.n{font:600 17px/22px var(--f);overflow-wrap:anywhere}
+.sub{color:var(--muted);font-size:14px;line-height:19px}
+.rside{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0}
+.tag-strict{display:inline-block;font:700 11px/14px var(--f);letter-spacing:.04em;text-transform:uppercase;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink);border-radius:999px;padding:2px 7px;vertical-align:2px;margin-left:8px}
+.kindtag{font:600 13px/16px var(--f);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.card{background:var(--card);border-radius:var(--r-card);padding:18px;display:grid;gap:14px;min-width:0;box-shadow:var(--shadow)}
+.card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.card-head > .hl{display:flex;gap:14px;align-items:center;min-width:0}
+.card-head .hl > div{min-width:0}
+.card-head h3{font:600 20px/24px var(--f);overflow-wrap:anywhere}
+.kv{display:grid;margin:0;border-top:1px solid var(--line)}
+.card > .kv:first-child{border-top:0}
+.kv > div{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding-block:12px;border-bottom:1px solid var(--line);min-width:0}
+.kv > div:last-child{border-bottom:0;padding-bottom:0}
+.card > .kv:first-child > div:first-child{padding-top:0}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;font-weight:600;text-align:right;overflow-wrap:anywhere;min-width:0;display:flex;gap:8px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
+.kv dd.none{color:var(--muted);font-weight:400}
+.kv-block{display:grid;gap:6px;border-top:1px solid var(--line);padding-top:14px}
+.kv-block p{margin:0;white-space:pre-wrap}
+.lastlog{list-style:none;margin:0;padding:0;display:grid;gap:8px;font-weight:600}
+.lastlog li{display:flex;gap:8px;align-items:center}
+.lastlog svg{width:18px;height:18px;color:var(--ok-ink)}
+.lastlog li.off{color:var(--muted);font-weight:400}
+.lastlog li.off svg{color:var(--muted)}
+.stack{display:grid;gap:12px}
+details.ended > summary{cursor:pointer;color:var(--muted);font-weight:600;padding-block:6px}
+.empty{background:var(--card);border:1.5px dashed var(--edge);border-radius:var(--r-card);padding:18px;display:grid;gap:8px;justify-items:start}
+.empty h3{font-size:17px}
+.empty p{margin:0;color:var(--muted);max-width:52ch}
+.loading{padding-block:48px}
+.invite-card{background:var(--sage-soft);border-radius:var(--r-card);padding:18px;display:grid;gap:10px}
+.invite-card b{font:700 20px/24px var(--f)}
+.invite-card p{margin:0}
+
+/* Družina */
+.av{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font:700 15px var(--f);color:var(--ink);background:var(--sage);flex-shrink:0;overflow:hidden}
+.av img{width:100%;height:100%;object-fit:cover}
+.av.care{background:var(--late-soft);color:var(--late-ink)}
+.av.pend{background:var(--line);color:var(--muted)}
+.member{justify-content:flex-start}
+.add-row{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:none;border:1.5px dashed var(--edge);border-radius:var(--r-card);padding:14px 16px;color:var(--ink)}
+.add-row .plus{width:44px;height:44px;border-radius:14px;background:var(--sage);display:grid;place-items:center;flex-shrink:0}
+.add-row .plus svg{width:22px;height:22px}
+.add-row b{display:block;font-weight:600;font-size:16px}
+.add-row small{color:var(--muted);font-size:14px}
+.rights{display:grid;gap:8px;background:var(--sage-soft);border-radius:16px;padding:14px;margin:0;list-style:none}
+.rights li{display:flex;gap:10px;font-size:15px}
+.rights svg{width:18px;height:18px;margin-top:2px;color:var(--ok-ink)}
+.rights li.no svg{color:var(--muted)}
+.linkbox{display:flex;gap:8px;align-items:center;background:var(--bg);border-radius:var(--r-field);padding:10px 12px}
+.linkbox code{font:400 13px/1.4 ui-monospace,Menlo,Consolas,monospace;overflow-wrap:anywhere;flex:1;min-width:0;user-select:all;-webkit-user-select:all}
+.steps{margin:0;padding-left:20px;display:grid;gap:8px}
+
+/* Pogled skrbnika */
+.care-banner{background:var(--sage-soft);border-radius:20px;padding:14px 16px;display:flex;gap:14px;align-items:center;margin-top:16px}
+.care-banner b{display:block;font-weight:600;font-size:16px;line-height:21px}
+.care-banner span{font-size:14px;color:var(--muted)}
+.ecard{background:var(--late-bg);border:1.5px dashed var(--late);border-radius:var(--r-card);padding:18px;display:grid;gap:12px}
+.ecard .eyebrow{color:var(--late-ink)}
+.etext{margin:0;white-space:pre-wrap;font:400 15px/22px var(--f);overflow-wrap:anywhere}
+.bottom-bar{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);z-index:20}
+.bottom-bar .wrap{padding-block:12px 14px}
+
+/* Časovnica */
+.filters{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none;margin-inline:-2px;padding-inline:2px}
+.filters::-webkit-scrollbar{display:none}
+.fchip{flex-shrink:0;border:1.5px solid var(--edge);background:var(--card);color:var(--ink);border-radius:999px;padding:0 16px;min-height:42px;font:600 15px/20px var(--f)}
+.fchip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--card)}
+.month{margin:18px 0 6px}
+.tl{list-style:none;margin:0;padding:0}
+.tl-item{display:grid;grid-template-columns:52px 14px minmax(0,1fr);gap:10px;padding-block:8px}
+.tl-date{font:600 15px/20px var(--f);text-align:right;padding-top:14px}
+.tl-date small{display:block;font-weight:400;font-size:14px;color:var(--muted)}
+.tl-dot{position:relative}
+.tl-dot::before{content:"";position:absolute;left:50%;top:22px;bottom:-24px;width:1.5px;background:var(--edge);transform:translateX(-50%)}
+.tl-item:last-child .tl-dot::before{display:none}
+.tl-dot::after{content:"";position:absolute;left:50%;top:18px;width:9px;height:9px;border-radius:50%;background:var(--kc,var(--ink));transform:translateX(-50%)}
+.tl-body{display:grid;gap:6px;background:var(--card);border-radius:20px;padding:14px 16px;min-width:0;box-shadow:var(--shadow)}
+.tl-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.tl-tag{display:inline-flex;font:600 13px/16px var(--f);padding:5px 10px;border-radius:999px;background:var(--sage-soft);color:var(--ink)}
+.tl-tag.op{background:var(--late-soft);color:var(--late-ink)}
+.tl-body .n{font-size:17px}
+.tl-note{margin:0;color:var(--muted);overflow-wrap:anywhere}
+.by{font-size:14px;color:var(--muted)}
+.thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.thumb{padding:0;border:0;background:none;border-radius:12px}
+.thumbs img{width:68px;height:68px;object-fit:cover;border-radius:12px;display:block}
+.pdf{display:grid;place-items:center;width:68px;height:68px;border-radius:12px;background:var(--sage-soft);font:700 12px var(--f);color:var(--ink);text-decoration:none}
+
+/* Teža */
+.chart{overflow-x:auto}
+.chart svg{max-width:100%;height:auto}
+.wc-grid{stroke:var(--line);stroke-width:1}
+.wc-area{fill:var(--sage-soft);stroke:none}
+.wc-line{fill:none;stroke:var(--ink);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.wc-pt{fill:var(--card);stroke:var(--ink);stroke-width:1.5}
+.wc-last{fill:var(--ink);stroke:var(--card);stroke-width:2}
+.wc-t{font:500 12px var(--f);fill:var(--muted)}
+.wc-tl{font:700 13px var(--f);fill:var(--ink)}
+
+/* Prvi zagon in povabilo */
+.ob{min-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;justify-content:space-between;gap:28px;padding-block:22px 28px}
+.ob-top{display:grid;gap:22px;align-content:start}
+.ob-bot{display:grid;gap:10px;justify-items:center}
+.mark{display:inline-flex;align-items:center;gap:6px;font:700 22px/1 var(--f);color:var(--ink);justify-self:start}
+.mark svg{width:24px;height:24px}
+.ob-title{font:700 clamp(38px,12vw,46px)/1.02 var(--f);letter-spacing:-.01em;margin:0;text-wrap:balance;overflow-wrap:anywhere}
+.ob-title.q{font-size:clamp(30px,9.5vw,36px);line-height:1.08}
+.ob-sub{margin:0;color:var(--muted);font-size:16px;line-height:22px;max-width:38ch}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.choice{display:grid;gap:18px;justify-items:start;text-align:left;background:var(--card);border:1.5px solid transparent;border-radius:var(--r-card);padding:20px 18px;box-shadow:var(--shadow)}
+.choice:hover{border-color:var(--ink)}
+.choice .ic{width:56px;height:56px;border-radius:var(--r-tile);background:var(--sage);display:grid;place-items:center}
+.choice .ic svg{width:28px;height:28px}
+.choice b{font:700 22px/26px var(--f);display:block}
+.choice small{color:var(--muted);font-size:14px;display:block;margin-top:4px}
+.obbar{display:flex;justify-content:space-between;align-items:center}
+.back{display:inline-flex;align-items:center;gap:2px;border:0;background:none;color:var(--muted);font-weight:600;padding:4px 0}
+.back svg{width:20px;height:20px}
+.photo-pick{display:flex;align-items:center;gap:16px;border:0;background:none;padding:0;text-align:left;color:inherit}
+.photo-pick .circ2{width:92px;height:92px;border-radius:50%;border:1.5px dashed var(--edge);background:var(--sage-soft);display:grid;place-items:center;overflow:hidden;flex-shrink:0}
+.photo-pick .circ2 svg{width:28px;height:28px}
+.photo-pick .circ2 img{width:100%;height:100%;object-fit:cover}
+.photo-pick b{display:block;font-weight:600;font-size:16px}
+.tchips{display:flex;flex-wrap:wrap;gap:8px}
+.tchip{font:600 16px/1 var(--f);padding:13px 16px;border-radius:var(--r-field);border:1.5px solid var(--edge);background:var(--card);color:var(--ink)}
+.tchip[aria-pressed="true"]{background:var(--sage);border-color:var(--ink)}
+.tchip.add{border-style:dashed;font-size:15px}
+.opt{display:flex;align-items:center;gap:14px;background:var(--card);border-radius:var(--r-card);padding:14px;box-shadow:var(--shadow)}
+.opt .ic{width:44px;height:44px;border-radius:14px;background:var(--sage);display:grid;place-items:center;flex-shrink:0}
+.opt .ic svg{width:22px;height:22px}
+.ring{width:96px;height:96px;border-radius:50%;flex-shrink:0;overflow:hidden;background:var(--sage);display:grid;place-items:center}
+.ring > *{width:100%;height:100%;display:grid;place-items:center}
+.ring img{object-fit:cover}
+.ring svg{width:34px;height:34px}
+.hero{display:flex;align-items:flex-end;gap:16px}
+.hero > .htxt{flex:1;min-width:0;display:grid;gap:8px}
+
+/* Navigacija */
+.nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);z-index:20}
+.nav .wrap{display:grid;grid-template-columns:repeat(4,1fr)}
+.nav a{display:flex;flex-direction:column;align-items:center;gap:4px;padding-block:9px 10px;color:var(--muted);text-decoration:none;font:500 12px/14px var(--f)}
+.nav .ni{width:62px;height:32px;border-radius:999px;display:grid;place-items:center}
+.nav svg{width:22px;height:22px}
+.nav a[aria-current="page"]{color:var(--ink);font-weight:700}
+.nav a[aria-current="page"] .ni{background:var(--sage)}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(88px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--card);padding:12px 16px;border-radius:16px;font:500 15px/20px var(--f);width:max-content;max-width:calc(100% - 32px);z-index:40;box-shadow:var(--shadow);display:flex;align-items:center;gap:14px}
+#toast[hidden]{display:none}
+#toast button{border:0;background:none;color:var(--card);font:700 15px/20px var(--f);padding:2px 0;display:inline-flex;align-items:center;gap:6px;text-decoration:underline;text-underline-offset:3px}
+#toast button svg{width:18px;height:18px}
+
+/* Obrazci */
+dialog.sheet{border:0;padding:0;background:var(--card);color:var(--ink);width:100%;max-width:600px;max-height:92vh;margin:auto auto 0;border-radius:28px 28px 0 0;overflow:auto;box-shadow:var(--shadow)}
+dialog.sheet::backdrop{background:var(--scrim)}
+@media (min-width:720px){dialog.sheet{margin:auto;border-radius:28px}}
+.sheet-in{display:grid;gap:16px;padding-top:20px;padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+.sheet-head{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.x{border:0;background:var(--line);color:var(--ink);width:36px;height:36px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;padding:0}
+.x svg{width:18px;height:18px}
+.field{display:grid;gap:6px;min-width:0}
+.lbl{font:600 14px/19px var(--f)}
+.field small{font-size:13px;color:var(--muted)}
+input,select,textarea{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1.5px solid var(--edge);border-radius:var(--r-field);padding:11px 14px;width:100%;min-width:0;min-height:48px}
+input:focus,select:focus,textarea:focus{border-color:var(--ink);outline:none;box-shadow:0 0 0 1px var(--ink)}
+input[type="file"]{padding:10px;font-size:14px}
+input[type="checkbox"]{width:22px;height:22px;min-height:0;accent-color:var(--ok-ink);flex-shrink:0}
+textarea{resize:vertical}
+.ob input{background:var(--card)}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:380px){.grid3{grid-template-columns:1fr 1fr}}
+fieldset{border:0;margin:0;padding:0;min-width:0}
+legend{padding:0;margin-bottom:6px}
+.seg{display:flex;border-radius:var(--r-field);padding:4px;background:var(--bg);box-shadow:inset 0 0 0 1.5px var(--edge)}
+.seg label{flex:1;text-align:center;padding:9px;border-radius:11px;font-weight:600;cursor:pointer;position:relative;color:var(--muted)}
+.seg input,.chip input{position:absolute;opacity:0;pointer-events:none}
+.seg label:has(input:checked){background:var(--card);box-shadow:var(--shadow);color:var(--ink)}
+.seg label:has(input:focus-visible),.chip:has(input:focus-visible){outline:2px solid var(--ink)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{position:relative;border:1.5px solid var(--edge);border-radius:999px;padding:8px 14px;font-weight:600;cursor:pointer;background:var(--card)}
+.chip:has(input:checked){background:var(--sage);border-color:var(--ink)}
+.qchips{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.qchip{border:1.5px solid var(--edge);background:none;color:var(--ink);border-radius:999px;padding:5px 11px;font:600 13px/1.2 var(--f)}
+.trows{display:grid;gap:8px}
+.trow{display:flex;gap:8px;align-items:center}
+.trow input{max-width:180px}
+.sheet-foot{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding-top:4px}
+.sheet-foot .sp{flex:1}
+.info{background:var(--sage-soft);border-radius:var(--r-field);padding:12px 14px;font-size:14px;line-height:19px;margin:0}
+details > summary{cursor:pointer}
+.ph-list{display:flex;flex-wrap:wrap;gap:10px;padding-top:6px}
+.ph{position:relative}
+.ph img{width:68px;height:68px;object-fit:cover;border-radius:12px;display:block}
+.ph .x{position:absolute;top:-8px;right:-8px;width:26px;height:26px;background:var(--ink);color:var(--card)}
+.ph .x svg{width:14px;height:14px}
+.lb{width:100%;border-radius:14px;display:block}
+.draft{display:flex;gap:12px;align-items:flex-start;background:var(--late-bg);border-radius:16px;padding:12px;font-size:14px;line-height:19px}
+.draft img{width:56px;height:56px;object-fit:cover;border-radius:10px;flex-shrink:0}
+.draft div{display:grid;gap:4px;min-width:0}
+.draft p{margin:0}
+.unsure{border-color:var(--late)!important;background:var(--late-bg)!important}
+.read-preview{width:100%;max-height:42vh;object-fit:contain;border-radius:14px;background:var(--bg);display:block}
+.reading{display:flex;align-items:center;gap:10px;margin:0;color:var(--muted)}
+.spin{width:18px;height:18px;border-radius:50%;border:2px solid var(--sage);border-top-color:var(--ink);animation:spin .9s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.bk-list{display:grid;border-radius:16px;overflow:hidden;box-shadow:inset 0 0 0 1.5px var(--line)}
+.bk{display:flex;gap:12px;align-items:center;padding:12px 14px;border-top:1px solid var(--line);cursor:pointer}
+.bk:first-child{border-top:0}
+.bk .rmain{flex:1}
+@media (prefers-reduced-motion:reduce){.done.pop .check{animation:none}.circ:active,.btn-hero:active{transform:none}.spin{animation-duration:2.5s}.donegrp .chev{transition:none}}
+</style>
+
+<header class="phead nophoto" id="top" hidden></header>
+<input type="file" id="photoPick" accept="image/*" hidden>
+<input type="file" id="medPick" accept="image/*" hidden>
+<input type="file" id="bookPick" accept="image/*" hidden>
+<input type="file" id="obPhoto" accept="image/*" hidden>
+<div class="wrap" id="banners"></div>
+<main class="wrap" id="view"><section class="sec loading"><span class="pill">Nalagam zapise …</span></section></main>
+
+<nav class="nav" id="nav" aria-label="Glavna navigacija" hidden>
+  <div class="wrap">
+    <a href="#danes" data-v="danes"><span class="ni" data-i="sun"></span><span>Danes</span></a>
+    <a href="#zdravje" data-v="zdravje"><span class="ni" data-i="heart"></span><span>Zdravje</span></a>
+    <a href="#casovnica" data-v="casovnica"><span class="ni" data-i="clock"></span><span>Časovnica</span></a>
+    <a href="#pes" data-v="pes"><span class="ni" data-i="paw"></span><span id="navPetLabel">Pes</span></a>
+  </div>
+</nav>
+<div class="bottom-bar" id="careBar" hidden><div class="wrap"><button class="btn btn-wide" data-act="new-note" id="careNote">Vpiši opažanje</button></div></div>
+<div id="toast" role="status" aria-live="polite" hidden></div>
+<dialog id="sheet" class="sheet" aria-label="Obrazec"></dialog>
+<script>
+(() => {
+'use strict';
+const ARTIFACT_URL = 'https://claude.ai/artifact/2a6NK5hL3wAny8Z6Wu83AS';
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const LS = {
+  get(k){ try { return localStorage.getItem(k); } catch(e){ return null; } },
+  set(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+};
+
+/* ---------- Ikone (iste kot v Figmi: črta 1,5 px, kljukica in križec 2 px) ---------- */
+const SV = (b, w) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w || 1.5}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${b}</svg>`;
+const I = {
+  check: SV('<path d="M20 6 9 17l-5-5"/>', 2),
+  x: SV('<path d="M18 6 6 18M6 6l12 12"/>', 2),
+  plus: SV('<path d="M5 12h14M12 5v14"/>', 1.75),
+  chevDown: SV('<path d="m6 9 6 6 6-6"/>'),
+  back: SV('<path d="m15 18-6-6 6-6"/>'),
+  chevRight: SV('<path d="m9 18 6-6-6-6"/>'),
+  cam: SV('<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/>'),
+  bell: SV('<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>'),
+  bowl: SV('<path d="M3.6 11.4h16.8"/><path d="M4.72 11.4l-1.34 6.27a1.79 1.79 0 0 0 1.79 2.13h13.66a1.79 1.79 0 0 0 1.79-2.13l-1.34-6.27"/><circle cx="8.2" cy="9.4" r="1.2"/><circle cx="12" cy="7.6" r="1.2"/><circle cx="15.8" cy="9.4" r="1.2"/>'),
+  pill: SV('<path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/>'),
+  bug: SV('<path d="m8 2 1.88 1.88M14.12 3.88 16 2M9 7.13v-1a3 3 0 1 1 6 0v1"/><path d="M12 20c-3.3 0-6-2.7-6-6v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3c0 3.3-2.7 6-6 6M12 20v-9M6.53 9C4.6 8.8 3 7.1 3 5M6 13H2M3 21c0-2.1 1.7-3.9 3.8-4M20.97 5c0 2.1-1.6 3.8-3.5 4M22 13h-4M17.2 17c2.1.1 3.8 1.9 3.8 4"/>'),
+  steth: SV('<path d="M11 2v2M5 2v2M5 3H4a2 2 0 0 0-2 2v4a6 6 0 0 0 12 0V5a2 2 0 0 0-2-2h-1"/><path d="M8 15a6 6 0 0 0 12 0v-3"/><circle cx="20" cy="10" r="2"/>'),
+  syringe: SV('<path d="m18 2 4 4M17 7l3-3M19 9 8.7 19.3c-1 1-2.5 1-3.4 0l-.6-.6c-1-1-1-2.5 0-3.4L15 5M9 11l4 4M5 19l-3 3M14 4l6 6"/>'),
+  sun: SV('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>'),
+  heart: SV('<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/>'),
+  clock: SV('<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>'),
+  paw: SV('<circle cx="5.5" cy="10.5" r="2"/><circle cx="9.5" cy="6" r="2"/><circle cx="14.5" cy="6" r="2"/><circle cx="18.5" cy="10.5" r="2"/><path d="M12 12c-2.8 0-5.5 3.3-5.5 5.8 0 1.6 1.2 2.7 2.8 2.7 1.1 0 1.7-.6 2.7-.6s1.6.6 2.7.6c1.6 0 2.8-1.1 2.8-2.7 0-2.5-2.7-5.8-5.5-5.8z"/>'),
+  scale: SV('<circle cx="12" cy="5" r="3"/><path d="M6.5 8a2 2 0 0 0-1.9 1.46L2.1 18.5A2 2 0 0 0 4 21h16a2 2 0 0 0 1.93-2.54L19.4 9.5A2 2 0 0 0 17.48 8Z"/>'),
+  note: SV('<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M13 8H7M17 12H7"/>'),
+  phone: SV('<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>'),
+  copy: SV('<rect x="8" y="8" width="14" height="14" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>'),
+  user: SV('<circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/>'),
+  edit: SV('<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>'),
+  photo: SV('<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/>'),
+  cat: SV('<path d="M12 5c.67 0 1.35.09 2 .26 1.78-2 5.03-2.84 6.42-2.26 1.4.58-.42 7-.42 7 .57 1.07 1 2.24 1 3.44C21 17.9 16.97 21 12 21s-9-3-9-7.56c0-1.25.5-2.4 1-3.44 0 0-1.89-6.42-.5-7 1.39-.58 4.72.23 6.5 2.23A9.04 9.04 0 0 1 12 5Z"/><path d="M8 14v.5M16 14v.5M11.25 16.25h1.5L12 17l-.75-.75Z"/>'),
+  dog: SV('<path d="M11.25 16.25h1.5L12 17z M16 14v.5M8 14v.5"/><path d="M4.42 11.25A13.15 13.15 0 0 0 4 14.56C4 18.73 7.58 21 12 21s8-2.27 8-6.44a11.7 11.7 0 0 0-.49-3.31"/><path d="M8.5 8.5c-.38 1.05-1.08 2.03-2.34 2.5-1.93.72-3.58-.3-3.66-1-.11-.99 1.18-6.53 4-7 1.92-.32 3.65.85 3.65 2.24A7.5 7.5 0 0 1 14 5.28c0-1.39 1.84-2.6 3.77-2.28 2.82.47 4.11 6.01 4 7-.08.7-1.73 1.72-3.66 1-1.26-.47-1.86-1.45-2.24-2.5"/>'),
+  alert: SV('<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4M12 17h.01"/>'),
+  calendar: SV('<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>'),
+  undo: SV('<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/>'),
+  book: SV('<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5A2.5 2.5 0 0 1 4 19.5Zm0 0A2.5 2.5 0 0 1 6.5 17H20"/>'),
+  share: SV('<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.59 13.51 6.83 3.98M15.41 6.51l-6.82 3.98"/>')
+};
+I.cross = I.x; I.okLi = I.check; I.noLi = I.x;
+const kindIcon = s => (s && s.kind === 'zdravilo') ? I.pill : I.bowl;
+
+/* ---------- Jezik in datumi ---------- */
+const MON_S = ['jan.','feb.','mar.','apr.','maj','jun.','jul.','avg.','sep.','okt.','nov.','dec.'];
+const MON_L = ['januar','februar','marec','april','maj','junij','julij','avgust','september','oktober','november','december'];
+const MON_G = ['januarja','februarja','marca','aprila','maja','junija','julija','avgusta','septembra','oktobra','novembra','decembra'];
+const DAY_L = ['nedelja','ponedeljek','torek','sreda','četrtek','petek','sobota'];
+const DAY_G = ['nedelje','ponedeljka','torka','srede','četrtka','petka','sobote'];
+const KINDS = {
+  cepljenje:{l:'Cepljenje', c:'var(--ink)', i:'syringe'},
+  pregled:{l:'Pregled', c:'var(--ink)', i:'steth'},
+  zajedavci:{l:'Zajedavci', c:'var(--ink)', i:'bug'},
+  opazanje:{l:'Opažanje', c:'var(--late)', i:'note'},
+  teza:{l:'Teža', c:'var(--muted)', i:'scale'},
+  drugo:{l:'Drugo', c:'var(--muted)', i:'calendar'}
+};
+const PRESETS = {
+  cepljenje:['Steklina','Kombinirano cepivo (DHPPi)','Leptospiroza','Kužni kašelj'],
+  pregled:['Letni pregled','Kontrolni pregled','Pregled zob','Krvne preiskave'],
+  zajedavci:['Klopi in bolhe','Notranji zajedavci','Srčna glista'],
+  drugo:[]
+};
+const TAGS = ['Bruha','Driska','Ne je','Veliko pije','Šepa','Se praska','Kašlja','Brez energije'];
+
+const pad = n => String(n).padStart(2,'0');
+const ymd = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const parseYmd = s => { const [y,m,d] = String(s).split('-').map(Number); return new Date(y,(m||1)-1,d||1); };
+const addDays = (d,n) => { const x = new Date(d); x.setDate(x.getDate()+n); return x; };
+const addMonths = (d,n) => { const x = new Date(d.getFullYear(), d.getMonth()+n, 1); const last = new Date(x.getFullYear(), x.getMonth()+1, 0).getDate(); x.setDate(Math.min(d.getDate(), last)); return x; };
+const daysBetween = (a,b) => Math.round((parseYmd(b) - parseYmd(a)) / 864e5);
+const hm = d => `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+const at = (ds,t) => { const d = parseYmd(ds); const [h,m] = String(t).split(':').map(Number); d.setHours(h||0,m||0,0,0); return d; };
+const today = () => ymd(new Date());
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+const num = (n,d=1) => Number(n).toLocaleString('sl-SI',{maximumFractionDigits:d});
+const rid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+const isYmd = s => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s);
+function newCode(){ const a = new Uint8Array(8); try { crypto.getRandomValues(a); } catch(e){ for (let i = 0; i < 8; i++) a[i] = Math.random()*256; } return Array.from(a, x => 'abcdefghjkmnpqrstuvwxyz23456789'[x % 31]).join(''); }
+function fmtDate(s){ if(!s) return ''; const d = parseYmd(s); return `${d.getDate()}. ${MON_S[d.getMonth()]}${d.getFullYear() !== new Date().getFullYear() ? ' ' + d.getFullYear() : ''}`; }
+function fmtNum(s){ const d = parseYmd(s); return `${d.getDate()}. ${d.getMonth()+1}.`; }
+function fmtFull(s){ const d = parseYmd(s); return `${d.getDate()}. ${d.getMonth()+1}. ${d.getFullYear()}`; }
+function fmtUntil(s){ const d = parseYmd(s); return `${DAY_G[d.getDay()]}, ${d.getDate()}. ${MON_G[d.getMonth()]}`; }
+function dni(n){ n = Math.abs(n) % 100; return n === 1 ? 'dan' : n === 2 ? 'dneva' : 'dni'; }
+function leta(n){ const k = n % 100; return k === 1 ? 'leto' : k === 2 ? 'leti' : (k === 3 || k === 4) ? 'leta' : 'let'; }
+function dur(m){ if (m < 60) return `${m} min`; const h = Math.floor(m/60), r = m % 60; return (r && h < 6) ? `${h} h ${r} min` : `${h} h`; }
+function dayWord(ts){ const s = ymd(new Date(ts)); if (s === today()) return 'danes'; if (s === ymd(addDays(new Date(),-1))) return 'včeraj'; return fmtDate(s); }
+function chipFmt(c){ const d = String(c||'').replace(/\D/g,''); return d ? d.replace(/(\d{3})(?=\d)/g,'$1 ') : String(c||''); }
+function ageOf(b){ if(!b) return ''; const d = parseYmd(b), n = new Date(); let y = n.getFullYear() - d.getFullYear(); if (n.getMonth() < d.getMonth() || (n.getMonth() === d.getMonth() && n.getDate() < d.getDate())) y--; if (y >= 1) return `${y} ${leta(y)}`; const m = (n.getFullYear()-d.getFullYear())*12 + n.getMonth() - d.getMonth() - (n.getDate() < d.getDate() ? 1 : 0); return `${Math.max(0,m)} mes.`; }
+const mealName = t => { const h = Number(String(t).split(':')[0]); return h < 11 ? 'Zajtrk' : h < 16 ? 'Kosilo' : 'Večerja'; };
+const species = p => (p && p.species === 'macka') ? 'macka' : 'pes';
+
+/* ---------- Stanje ---------- */
+const S = {
+  mode:'loading', store:null, user:null, assets:null, sample:null, sampleImg:false, me:{id:null}, isOwner:false, canWrite:true,
+  pets:[], schedules:[], doses:[], events:[], members:[], invites:[], loaded:{},
+  petId: LS.get('dano.pet'), names:{}, confirm:null, justGiven:null, filter:'vse', slotIndex:new Map(),
+  readCtl:null, medQueue:null, lastScan:null, ob:null, obKey:null, preview:false, declined:null, ownerDocTried:false
+};
+const COLS = ['pets','schedules','doses','events','members','invites'];
+const pet = () => S.pets.find(p => p.id === S.petId) || null;
+const mine = arr => arr.filter(x => x.petId === S.petId);
+const sortedPets = () => S.pets.slice().sort((a,b) => (a.createdAt||0) - (b.createdAt||0));
+const allLoaded = () => COLS.every(c => S.loaded[c]);
+const view = () => { const h = (location.hash||'').slice(1); return ['danes','zdravje','casovnica','pes'].includes(h) ? h : 'danes'; };
+const inviteCode = () => { const m = (location.hash||'').match(/^#povabilo-([a-z0-9]{6,12})$/); return m ? m[1] : null; };
+const photoSrc = ph => ph ? (ph.id ? '/_blob/' + encodeURIComponent(ph.id) : (ph.data || '')) : '';
+const canPhoto = () => S.canWrite && (!!S.assets || S.mode === 'local');
+const canScan = () => S.canWrite && !!S.sample && S.sampleImg;
+const newOb = adding => ({ step:'a', species:'pes', name:'', birth:'', kg:'', breed:'', times:['07:00','18:00'], amount:'', photoFile:null, photoUrl:'', adding:!!adding, addTime:false, after:null, saving:false });
+
+/* ---------- Vloge ---------- */
+const myMember = () => S.members.find(m => m.id === S.me.id) || null;
+function role(){
+  if (S.preview) return 'skrbnik';
+  if (S.isOwner) return 'lastnik';
+  const m = myMember();
+  if (m) {
+    if (m.role === 'odstranjen') return 'odstranjen';
+    if (m.role === 'skrbnik') return (m.until && m.until < today()) ? 'poteklo' : 'skrbnik';
+    if (m.role === 'lastnik') return 'lastnik';
+  }
+  return 'druzina';
+}
+const canManage = () => role() === 'lastnik' && S.canWrite;
+const canInvite = () => ['lastnik','druzina'].includes(role()) && S.canWrite;
+function carePet(){
+  if (S.preview) return pet();
+  const m = myMember(); const id = m && m.pets && m.pets[0];
+  return S.pets.find(p => p.id === id) || (m && !id ? S.pets[0] : null) || null;
+}
+function nameOf(id){
+  if (!id) return 'Nekdo';
+  const m = S.members.find(x => x.id === id);
+  if (m && m.name) return m.name;
+  const n = S.names[id] && S.names[id].name;
+  return n || 'Nekdo';
+}
+function who(id, ex){
+  if (ex) return 'primer';
+  if (!id) return 'nekdo';
+  if (id === S.me.id) return 'ti';
+  const n = nameOf(id);
+  return n === 'Nekdo' ? 'nekdo' : n.split(' ')[0];
+}
+function currentMode(){
+  if (S.mode === 'loading' || !allLoaded()) return 'loading';
+  if (inviteCode()) return 'invite';
+  const r = role();
+  if (r === 'poteklo' || r === 'odstranjen') return 'ended';
+  if (r === 'skrbnik') return carePet() ? 'care' : 'ended';
+  if (S.ob || !S.pets.length) return 'onboard';
+  return 'app';
+}
+
+/* ---------- Shramba: deljena (db) ali lokalna v predogledu ---------- */
+function localStore(){
+  const KEY = 'dano.local.v1';
+  let data; try { data = JSON.parse(LS.get(KEY)) || {}; } catch(e){ data = {}; }
+  COLS.forEach(c => { data[c] = data[c] || {}; });
+  const subs = {};
+  const save = () => LS.set(KEY, JSON.stringify(data));
+  const snap = c => { const docs = Object.entries(data[c]).map(([id,v]) => ({id, exists:true, data:() => v})); return {docs, size:docs.length, empty:!docs.length}; };
+  const emit = c => (subs[c]||[]).forEach(cb => cb(snap(c)));
+  return {
+    collection(c){
+      return {
+        onSnapshot(cb){ (subs[c] = subs[c] || []).push(cb); setTimeout(() => cb(snap(c)), 0); return () => {}; },
+        doc(id){
+          id = id || rid();
+          return {
+            id,
+            async set(v){ data[c][id] = JSON.parse(JSON.stringify(v)); save(); emit(c); },
+            async update(v){ if (!data[c][id]) throw {code:'invalid_argument'}; Object.assign(data[c][id], JSON.parse(JSON.stringify(v))); save(); emit(c); },
+            async delete(){ delete data[c][id]; save(); emit(c); }
+          };
+        }
+      };
+    }
+  };
+}
+const col = c => S.store.collection(c);
+
+async function w(fn){
+  if (!S.store) return false;
+  try { await fn(); return true; }
+  catch(e){
+    const c = e && e.code;
+    if (c === 'unavailable') {
+      await new Promise(r => setTimeout(r, 500 + Math.random()*700));
+      try { await fn(); return true; } catch(e2){ toast('Povezava ni uspela. Poskusi znova.'); return false; }
+    }
+    if (c === 'invalid_argument' && S.mode === 'db') { S.canWrite = false; toast('Zapisa ni bilo mogoče shraniti. Za vpisovanje potrebuješ dostop za urejanje.'); render(); }
+    else if (c === 'quota_exceeded') toast('Prostor za zapise je poln. Izbriši stare vpise.');
+    else if (c === 'revoked') { S.canWrite = false; render(); }
+    else toast('Shranjevanje ni uspelo. Poskusi znova.');
+    console.warn(e);
+    return false;
+  }
+}
+
+/* ---------- Urnik, odmerki, roki ---------- */
+function activeOn(s, d){ return (!s.startDate || s.startDate <= d) && (!s.endDate || d <= s.endDate); }
+function slotsFor(d){
+  const map = new Map(S.doses.map(x => [x.id, x]));
+  const out = [];
+  for (const s of mine(S.schedules)) {
+    if (!activeOn(s, d)) continue;
+    for (const t of (s.times || [])) {
+      const key = `${s.id}_${d}_${String(t).replace(':','')}`;
+      out.push({key, s, time:t, date:d, dt:at(d,t), dose:map.get(key)});
+    }
+  }
+  return out.sort((a,b) => a.time.localeCompare(b.time) || (a.s.kind === 'hrana' ? -1 : 1));
+}
+function status(sl, now){
+  if (sl.dose && !sl.dose.undoneAt) return 'given';
+  const diff = (now - sl.dt) / 60000;
+  if (diff > 30) return 'late';
+  if (diff >= -60) return 'due';
+  return 'upcoming';
+}
+function minGap(s){
+  const m = (s.times||[]).map(t => { const [h,mm] = t.split(':').map(Number); return h*60+mm; }).sort((a,b) => a-b);
+  if (m.length < 2) return 12*60;
+  let g = 24*60 - m[m.length-1] + m[0];
+  for (let i = 1; i < m.length; i++) g = Math.min(g, m[i] - m[i-1]);
+  return g * 0.5;
+}
+function guardMsg(sl){
+  const now = Date.now();
+  const word = sl.s.kind === 'hrana' ? 'obrok' : 'odmerek';
+  const last = S.doses.filter(d => d.scheduleId === sl.s.id && !d.undoneAt && d.id !== sl.key).sort((a,b) => b.givenAt - a.givenAt)[0];
+  if (last) {
+    const mins = (now - last.givenAt) / 60000;
+    if (mins >= 0 && mins < minGap(sl.s)) return `Zadnji ${word} je bil dan ${dayWord(last.givenAt)} ob ${hm(new Date(last.givenAt))} (${who(last.by, last.example)}, pred ${dur(Math.max(1, Math.round(mins)))}). Res daš še enega?`;
+  }
+  if (sl.dt - now > 90*60000) return `Ta ${word} je na sporedu ob ${sl.time}. Res ga označiš že zdaj?`;
+  return null;
+}
+function stockInfo(s){
+  if (s.stock == null || s.stock === '') return null;
+  const per = Number(s.perDose) || 1;
+  const used = S.doses.filter(d => d.scheduleId === s.id && !d.undoneAt && (d.givenAt||0) >= (s.stockAt||0)).length * per;
+  const left = Math.max(0, Number(s.stock) - used);
+  const perDay = per * Math.max(1, (s.times||[]).length);
+  return {left, per, perDay, daysLeft:Math.floor(left / perDay), unit:s.unit || 'kos'};
+}
+function stockWarnings(){
+  const t = today(), now = new Date();
+  const out = [];
+  for (const s of mine(S.schedules)) {
+    if (!activeOn(s, t)) continue;
+    const st = stockInfo(s); if (!st) continue;
+    if (s.endDate) {
+      const restToday = slotsFor(t).filter(x => x.s.id === s.id && status(x, now) !== 'given').length;
+      const needed = (restToday + Math.max(0, daysBetween(t, s.endDate)) * (s.times||[]).length) * st.per;
+      if (st.left < needed) out.push({s, st, label:'Zmanjka pred koncem', cls:'late'});
+    } else if (st.daysLeft <= 7) {
+      out.push({s, st, label: st.daysLeft <= 0 ? 'Zmanjkalo' : `Še ${st.daysLeft} ${dni(st.daysLeft)}`, cls: st.daysLeft <= 2 ? 'late' : 'warn'});
+    }
+  }
+  return out;
+}
+function reminders(){
+  const t = today();
+  const g = new Map();
+  for (const e of mine(S.events)) {
+    if (!['cepljenje','pregled','zajedavci','drugo'].includes(e.kind)) continue;
+    const k = e.kind + '|' + String(e.title||'').trim().toLowerCase();
+    const cur = g.get(k);
+    if (!cur || e.date > cur.date || (e.date === cur.date && (e.createdAt||0) > (cur.createdAt||0))) g.set(k, e);
+  }
+  return [...g.values()].filter(e => e.nextDue).map(e => {
+    const days = daysBetween(t, e.nextDue), strict = /steklin/i.test(e.title||'');
+    const win = strict ? 30 : 14;
+    const cls = days < 0 ? 'late' : days <= win ? 'warn' : 'ok';
+    const label = days < 0 ? `Zamuja ${-days} ${dni(-days)}` : days === 0 ? 'Danes' : days === 1 ? 'Jutri' : `Čez ${days} ${dni(days)}`;
+    return {e, days, strict, cls, label};
+  }).sort((a,b) => a.days - b.days);
+}
+function nextFrom(e, from){
+  if (!e.nextDue) return '';
+  const a = parseYmd(e.date), b = parseYmd(e.nextDue);
+  if (a.getDate() === b.getDate()) { const months = (b.getFullYear()-a.getFullYear())*12 + b.getMonth() - a.getMonth(); return ymd(addMonths(parseYmd(from), months)); }
+  return ymd(addDays(parseYmd(from), daysBetween(e.date, e.nextDue)));
+}
+const weights = () => mine(S.events).filter(e => e.kind === 'teza' && e.kg > 0).sort((a,b) => a.date.localeCompare(b.date) || (a.createdAt||0) - (b.createdAt||0));
+
+/* ---------- Izris ---------- */
+let showDone = false;
+function obKey(){ const o = S.ob; return o ? JSON.stringify([o.step, o.species, o.times, o.addTime, o.photoUrl, o.adding, canScan(), canPhoto()]) : ''; }
+function render(){
+  const m = currentMode();
+  if (m === 'invite') {
+    const code = inviteCode(), mm = myMember();
+    if (mm && mm.invite === code && !S.isOwner) { location.hash = 'danes'; return; }
+  }
+  if (m === 'care') { const cp = carePet(); if (cp) S.petId = cp.id; }
+  document.body.dataset.mode = m;
+  $('#top').hidden = !(m === 'app' || m === 'care');
+  $('#nav').hidden = m !== 'app';
+  $('#careBar').hidden = !(m === 'care' && S.canWrite);
+  const el = $('#view');
+  if (m === 'onboard') {
+    if (!S.ob) S.ob = newOb(false);
+    const k = obKey();
+    if (el.dataset.m === 'onboard' && S.obKey === k) return;
+    S.obKey = k;
+  } else S.obKey = null;
+  el.dataset.m = m;
+  $('#banners').innerHTML = '';
+  if (m === 'loading') { el.innerHTML = '<section class="sec loading"><span class="pill">Nalagam zapise …</span></section>'; return; }
+  if (m === 'invite') { el.innerHTML = inviteHtml(inviteCode()); return; }
+  if (m === 'ended') { el.innerHTML = endedHtml(); return; }
+  if (m === 'onboard') { el.innerHTML = obHtml(); const n = $('#ob-name'); if (n && !n.value) n.focus({preventScroll:true}); return; }
+  const v = view();
+  renderHeader(v, m);
+  if (m === 'care') { el.innerHTML = careHtml(); S.justGiven = null; return; }
+  document.querySelectorAll('.nav a').forEach(a => { if (a.dataset.v === v) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current'); });
+  $('#navPetLabel').textContent = species(pet()) === 'macka' ? 'Mačka' : 'Pes';
+  el.innerHTML = v === 'zdravje' ? zdravjeHtml() : v === 'casovnica' ? casovnicaHtml() : v === 'pes' ? pesHtml() : danesHtml();
+  S.justGiven = null;
+}
+
+function markHtml(){ return `<span class="mark">${I.paw}Dano</span>`; }
+function renderHeader(v, m){
+  const p = pet(), pets = sortedPets(), top = $('#top');
+  if (!p) { top.innerHTML = ''; top.dataset.k = ''; return; }
+  const parts = [p.breed ? cap(p.breed) : (species(p) === 'macka' ? 'Mačka' : 'Pes')];
+  if (p.birth) parts.push(ageOf(p.birth));
+  const ws = weights(); if (ws.length) parts.push(`${num(ws[ws.length-1].kg)} kg`);
+  const src = photoSrc(p.photo);
+  const edit = m === 'app' && canPhoto();
+  const menu = m === 'app' && (pets.length > 1 || S.canWrite);
+  const chip = menu ? `<button class="glass" data-act="pet-menu" aria-label="Izberi žival, zdaj ${esc(p.name || 'brez imena')}">${esc(p.name || 'Brez imena')}${I.chevDown}</button>` : '<span></span>';
+  const camBtn = !edit ? '' : src ? `<button class="glass round" data-act="edit-photo" aria-label="Zamenjaj fotografijo">${I.cam}</button>` : `<button class="glass add" data-act="edit-photo">${I.cam}Dodaj sliko</button>`;
+  const html = `${src ? `<img src="${esc(src)}" alt="${esc(p.name)}">` : ''}<div class="ph-in"><div class="ph-top">${chip}${camBtn}</div><div><h1 class="pet-name">${esc(p.name || 'Brez imena')}</h1><div class="pet-meta">${parts.map(x => `<span>${esc(x)}</span>`).join('')}</div></div></div>`;
+  if (top.dataset.k !== html) { top.className = 'phead' + (src ? '' : ' nophoto'); top.innerHTML = html; top.dataset.k = html; }
+  const b = [];
+  if (m === 'care' && S.preview) b.push(`<div class="banner pv"><span>Predogled: tako vidi skrbnik.</span><button data-act="end-preview">Zapri predogled</button></div>`);
+  if (S.mode === 'local') b.push('<p class="banner">Predogled: zapisi ostanejo samo v tem brskalniku. Na objavljeni strani jih vidi vsa družina.</p>');
+  if (S.mode === 'db' && !S.canWrite) b.push('<p class="banner">Samo ogled. Za vpisovanje prosi lastnika, da ti v meniju Deli dovoli urejanje.</p>');
+  $('#banners').innerHTML = b.join('');
+}
+
+function emptyCard(title, text, action){
+  return `<div class="empty"><h3>${esc(title)}</h3><p>${esc(text)}</p>${action||''}</div>`;
+}
+
+/* Danes */
+function giveLabel(s){
+  const n = String(s.name || '').trim(), last = n.slice(-1).toLowerCase();
+  return `${n} je ${last === 'a' ? 'dana' : (last === 'o' || last === 'e') ? 'dano' : 'dan'}`;
+}
+function accName(s){
+  let n = String(s.name || '').trim();
+  const words = n.split(/\s+/);
+  const plain = s.kind === 'hrana' || (words.length === 1 && !/\d/.test(n));
+  if (plain) n = n.charAt(0).toLowerCase() + n.slice(1);
+  return n.split(/(\s+)/).map(wd => (wd.length >= 4 && /a$/.test(wd)) ? wd.slice(0,-1) + 'o' : wd).join('');
+}
+function listJoin(a){ return a.length < 2 ? (a[0] || '') : a.slice(0,-1).join(', ') + ' in ' + a[a.length-1]; }
+function daySummary(slots, st){
+  const p = pet();
+  const given = slots.filter((s,i) => st[i] === 'given');
+  if (!slots.length) return '';
+  if (!given.length) return 'Danes še ni nič odkljukano.';
+  const names = [...new Set(given.map(x => accName(x.s)))];
+  const all = given.length === slots.length;
+  const verb = p && p.sex === 'z' ? 'dobila' : p && p.sex === 'm' ? 'dobil' : '';
+  if (verb) return `${p.name} je danes ${all ? 'dobil' + (p.sex === 'z' ? 'a' : '') + ' vse: ' : verb + ' '}${listJoin(names)}.`;
+  return `${all ? 'Danes je opravljeno vse: ' : 'Danes že opravljeno: '}${listJoin(names)}.`;
+}
+function nextIdx(st){
+  let i = st.indexOf('late'); if (i < 0) i = st.indexOf('due'); if (i < 0) i = st.indexOf('upcoming');
+  return i;
+}
+function tomorrowFirst(){ const s = slotsFor(ymd(addDays(new Date(), 1))); return s[0] || null; }
+function othersHtml(){
+  const others = familyRows().filter(r => r.id !== S.me.id && !(r.m && r.m.role === 'odstranjen'));
+  if (role() === 'skrbnik') return `<div class="now-who"><span>Lastnik takoj vidi, ko označiš.</span></div>`;
+  if (!others.length) return `<div class="now-who"><span>Ko označiš, se zapiše ura in kdo je dal.</span></div>`;
+  const names = others.map(r => nameOf(r.id).split(' ')[0]).filter(n => n !== 'Nekdo');
+  const verb = others.length === 1 ? 'vidi' : others.length === 2 ? 'vidita' : 'vidijo';
+  const who = names.length === others.length ? listJoin(names) : (others.length === 1 ? 'drugi' : 'ostali doma');
+  return `<div class="now-who"><span class="avs">${others.slice(0,3).map(r => avatarHtml(r.id, nameOf(r.id), r.m && r.m.role === 'skrbnik' ? 'care' : '')).join('')}</span><span>Ko označiš, ${esc(who)} takoj ${verb}, kdo in kdaj.</span></div>`;
+}
+function nowCard(slots, st, now){
+  const i = nextIdx(st);
+  if (i < 0) {
+    const tm = tomorrowFirst();
+    return `<div class="now is-done"><div class="now-top"><span class="eyebrow">Danes</span><span class="pill ok">${slots.length} od ${slots.length}</span></div><div class="now-main"><span class="tile lg">${I.check}</span><div><h2 class="now-name" style="font-size:clamp(26px,8vw,32px)">Vse za danes je opravljeno.</h2>${tm ? `<div class="now-sub">Jutri ob ${esc(tm.time)}: ${esc(tm.s.name)}</div>` : ''}</div></div></div>`;
+  }
+  const sl = slots[i], s = sl.s, stt = st[i];
+  if (S.confirm && S.confirm.key === sl.key) {
+    return `<div class="now is-guard" role="alert"><div class="now-top"><span class="eyebrow">Preveri, preden označiš</span><span class="tile sm warn">${I.alert}</span></div><p>${esc(S.confirm.msg)}</p><div class="btns"><button class="btn btn-primary" data-act="give-force" data-key="${esc(sl.key)}">Vseeno označi</button><button class="btn" data-act="guard-cancel">Prekliči</button></div></div>`;
+  }
+  const mins = Math.round((now - sl.dt) / 60000);
+  const eyebrow = (stt === 'late' || stt === 'due') ? 'Zdaj na vrsti' : 'Naslednje';
+  const pill = stt === 'late' ? `<span class="pill late">${I.bell}Zamuja ${dur(mins)}</span>`
+    : (stt === 'due' && mins < 0) ? `<span class="pill light">Čez ${dur(-mins)}</span>`
+    : stt === 'due' ? '<span class="pill light">Zdaj</span>'
+    : `<span class="pill light">Ob ${esc(sl.time)}</span>`;
+  const btn = S.canWrite ? `<button class="btn-hero" data-act="give" data-key="${esc(sl.key)}">${I.check}${esc(giveLabel(s))}</button>` : '';
+  return `<div class="now"><div class="now-top"><span class="eyebrow">${eyebrow}</span>${pill}</div><div class="now-main"><span class="tile lg">${kindIcon(s)}</span><div><h2 class="now-name">${esc(s.name)}</h2><div class="now-sub">${esc([sl.time, s.dose].filter(Boolean).join(' · '))}</div></div></div>${othersHtml()}${btn}</div>`;
+}
+function todayHtml(){
+  const now = new Date(), t = today();
+  const slots = slotsFor(t);
+  S.slotIndex = new Map(slots.map(s => [s.key, s]));
+  const st = slots.map(s => status(s, now));
+  let h = `<section class="today"><span class="eyebrow">${DAY_L[now.getDay()]}, ${now.getDate()}. ${MON_G[now.getMonth()]}</span>`;
+  if (!slots.length) {
+    h += '</section><section class="sec">';
+    if (role() === 'skrbnik') h += emptyCard('Za danes ni ničesar na sporedu.', 'Ko lastnik doda obrok ali zdravilo, se pokaže tukaj.');
+    else h += emptyCard('Za danes ni ničesar na sporedu.', 'Dodaj hranjenje ali zdravilo z uro, pa se pokaže tukaj.', S.canWrite ? `<div class="btns"><button class="btn btn-primary" data-act="new-sched">${I.plus}Hranjenje ali zdravilo</button>${canScan() ? `<button class="btn" data-act="scan-med">${I.cam}Slikaj ovojnico</button>` : ''}</div>` : '');
+    return h + '</section>';
+  }
+  h += `<p class="today-sum">${esc(daySummary(slots, st))}</p>${nowCard(slots, st, now)}</section>`;
+  const ni = nextIdx(st);
+  const rest = slots.map((s,i) => [s, st[i], i]).filter(([s,x,i]) => x !== 'given' && i !== ni);
+  const done = slots.map((s,i) => [s, st[i]]).filter(([s,x]) => x === 'given');
+  if (rest.length) h += `<section class="sec"><h2>Še danes</h2><ol class="vps">${rest.map(([s,x]) => vpRow(s, x, now)).join('')}</ol></section>`;
+  if (done.length && ni >= 0) {
+    const sum = done.map(([s]) => `${s.s.name} ${hm(new Date(s.dose.givenAt))}`).join(' · ');
+    h += `<section class="sec" style="padding-top:${rest.length ? 4 : 26}px"><button class="donegrp" data-act="toggle-done" aria-expanded="${showDone}"><span class="oks">${done.slice(0,3).map(() => `<span>${I.check}</span>`).join('')}</span><span class="rmain"><span class="n">${done.length} opravljeno</span><span class="sub">${esc(sum)}</span></span><span class="chev">${I.chevDown}</span></button>${showDone ? `<ol class="vps">${done.map(([s,x]) => vpRow(s, x, now)).join('')}</ol>` : ''}</section>`;
+  } else if (done.length) {
+    h += `<section class="sec"><h2>Opravljeno danes</h2><ol class="vps">${done.map(([s,x]) => vpRow(s, x, now)).join('')}</ol></section>`;
+  }
+  return h;
+}
+function inviteCard(){
+  if (!canInvite() || !S.petId || LS.get('dano.invHide.' + S.petId)) return '';
+  if (familyRows().some(r => r.id !== S.me.id) || pendingInvites().length) return '';
+  return `<section class="sec"><div class="invite-card"><b>Povabi družino</b><p>Ko kdo da hrano ali zdravilo, vsi doma takoj vidijo, kdo in kdaj.</p><div class="btns"><button class="btn btn-primary" data-act="new-member">${I.plus}Povabi</button><button class="link" data-act="hide-invite">Kasneje</button></div></div></section>`;
+}
+function danesHtml(){
+  let h = todayHtml();
+  const rem = reminders().filter(r => r.days <= 30);
+  const stock = stockWarnings();
+  if (rem.length || stock.length) {
+    h += `<section class="sec"><div class="sec-head"><h2>Prihaja</h2><a class="btn-add" href="#zdravje">Vsi roki${I.chevRight}</a></div><div class="rows">${stock.map(stockRow).join('')}${rem.map(remRow).join('')}</div></section>`;
+  } else if (!mine(S.events).some(e => ['cepljenje','zajedavci','pregled'].includes(e.kind))) {
+    h += `<section class="sec"><h2>Prihaja</h2>${emptyCard('Še ni rokov za cepljenja in zajedavce.', canScan() ? 'Slikaj cepilno knjižico, pa nastavim roke.' : 'Vpiši zadnje cepljenje in naslednji rok, pa te opomnim.', S.canWrite ? (canScan() ? `<button class="btn-sm" data-act="scan-book">${I.cam}Slikaj knjižico</button>` : `<button class="btn-sm" data-act="new-event">${I.plus}Vpis</button>`) : '')}</section>`;
+  }
+  return h + inviteCard();
+}
+function vpRow(sl, st, now){
+  const s = sl.s;
+  let meta = `<span>${esc(sl.time)} · ${s.kind === 'zdravilo' ? 'Zdravilo' : 'Hranjenje'}</span>`;
+  if (st === 'late') meta += `<span class="pill warn">Zamuja ${dur(Math.round((now - sl.dt)/60000))}</span>`;
+  let action;
+  if (st === 'given') {
+    const d = sl.dose, by = who(d.by, d.example);
+    meta = `<span>${hm(new Date(d.givenAt))} · ${esc(by)}</span>`;
+    action = `<div class="done${S.justGiven === sl.key ? ' pop' : ''}"><span class="check" role="img" aria-label="Opravljeno ob ${hm(new Date(d.givenAt))}, ${esc(by)}">${I.check}</span>${S.canWrite ? `<button class="undo" data-act="undo" data-key="${esc(sl.key)}">Razveljavi</button>` : ''}</div>`;
+  } else {
+    action = S.canWrite ? `<button class="circ" data-act="give" data-key="${esc(sl.key)}" aria-label="Označi kot opravljeno: ${esc(s.name)} ob ${esc(sl.time)}">${I.x}</button>` : `<span class="pill">${st === 'late' ? 'ni označeno' : 'čaka'}</span>`;
+  }
+  const undone = (sl.dose && sl.dose.undoneAt && st !== 'given') ? `<div class="note">Razveljavljeno ob ${hm(new Date(sl.dose.undoneAt))} · ${esc(who(sl.dose.undoneBy))}</div>` : '';
+  const guard = (S.confirm && S.confirm.key === sl.key) ? `<div class="guard" role="alert"><p>${esc(S.confirm.msg)}</p><div class="btns"><button class="btn btn-primary" data-act="give-force" data-key="${esc(sl.key)}">Vseeno označi</button><button class="btn" data-act="guard-cancel">Prekliči</button></div></div>` : '';
+  return `<li class="vp is-${st}"><span class="tile">${kindIcon(s)}</span><div class="rmain"><div class="vp-meta">${meta}</div><div class="vp-name">${esc(s.name)}</div>${s.dose && st !== 'given' ? `<div class="vp-sub">${esc(s.dose)}</div>` : ''}${undone}</div>${action}${guard}</li>`;
+}
+function remRow(r){
+  const e = r.e, k = KINDS[e.kind] || KINDS.drugo;
+  return `<div class="row"><span class="tile sm${r.cls === 'late' ? ' warn' : ''}">${I[k.i]}</span><div class="rmain"><div class="n">${esc(e.title)}${r.strict ? '<span class="tag-strict">obvezno</span>' : ''}</div><div class="sub">${k.l} · rok ${fmtDate(e.nextDue)}</div></div><div class="rside"><span class="pill ${r.cls}">${r.label}</span>${S.canWrite ? `<button class="btn-sm" data-act="done-rem" data-id="${esc(e.id)}">${I.check}Opravljeno</button>` : ''}</div></div>`;
+}
+function stockRow(x){
+  return `<div class="row"><span class="tile sm warn">${kindIcon(x.s)}</span><div class="rmain"><div class="n">${esc(x.s.name)}</div><div class="sub">Zaloga: še ${num(x.st.left)} ${esc(x.st.unit)}</div></div><div class="rside"><span class="pill ${x.cls}">${x.label}</span>${S.canWrite ? `<button class="btn-sm" data-act="edit-sched" data-id="${esc(x.s.id)}">${I.plus}Dopolni</button>` : ''}</div></div>`;
+}
+
+/* Pogled skrbnika */
+function careHtml(){
+  const p = pet(), m = myMember();
+  const until = S.preview ? ymd(addDays(new Date(), 6)) : (m && m.until);
+  let h = `<div class="care-banner"><span class="tile sm">${I.clock}</span><div><b>${until ? `Do ${esc(fmtUntil(until))} skrbiš za ${esc(p.name)}.` : `Skrbiš za ${esc(p.name)}.`}</b><span>Lastnik vidi vse, kar označiš ali vpišeš.</span></div></div>`;
+  h += todayHtml();
+  if (p.note) h += `<section class="sec"><h2>Navodila lastnika</h2><div class="card"><p style="margin:0;white-space:pre-wrap">${esc(p.note)}</p></div></section>`;
+  const meds = mine(S.schedules).filter(s => s.kind === 'zdravilo' && activeOn(s, today()));
+  h += `<section class="sec"><h2>Nujno</h2><div class="ecard"><dl class="kv" style="border-top:0">
+    ${kv('Alergije', p.allergies || 'ni znanih')}${kv('Čip', p.chip ? chipFmt(p.chip) : '', true)}${kv('Veterinar', p.vetName)}${kv('Telefon', p.vetPhone, true)}
+    ${meds.length ? kv('Zdravila zdaj', meds.map(s => s.name + (s.dose ? ', ' + s.dose : '')).join('; ')) : ''}
+  </dl>${p.vetPhone ? `<button class="btn" data-act="copy-phone">${I.copy}Kopiraj številko veterinarja</button>` : ''}</div></section>`;
+  return h;
+}
+function endedHtml(){
+  const r = role(), m = myMember();
+  if (r === 'poteklo') return msgScreen('Dostop je potekel', `Tvoj dostop je veljal do ${esc(fmtUntil(m.until))}. Če še skrbiš za žival, prosi lastnika za novo povabilo.`);
+  if (r === 'odstranjen') return msgScreen('Nimaš več dostopa', 'Lastnik te je odstranil s seznama. Če je to pomota, ga prosi za novo povabilo.');
+  return msgScreen('Žival ni več na seznamu', 'Lastnik je žival odstranil iz aplikacije.');
+}
+function msgScreen(title, text, actions){
+  return `<section class="ob"><div class="ob-top">${markHtml()}<h1 class="ob-title q">${esc(title)}</h1><p class="ob-sub">${text}</p></div><div class="ob-bot">${actions || ''}</div></section>`;
+}
+
+/* Povabilo */
+function rightsHtml(roleName){
+  const L = roleName === 'skrbnik'
+    ? [[1,'Vidiš današnje obroke in zdravila z urami.'],[1,'Ko daš hrano ali zdravilo, ga odkljukaš. Lastnik takoj vidi, kdo in kdaj.'],[1,'Imaš nujno kartico z alergijami in številko veterinarja.'],[0,'Zapisov ne moreš urejati ali brisati.']]
+    : [[1,'Vidiš vse zapise: hranjenje, zdravila, cepljenja in težo.'],[1,'Odkljukaš, kar je opravljeno, in dodajaš nove vpise.'],[1,'Lahko povabiš skrbnika, ko vas ni doma.'],[0,'Ljudi v družino dodaja lastnik.']];
+  return L.map(([ok, t]) => `<li class="${ok ? '' : 'no'}">${ok ? I.okLi : I.noLi}<span>${esc(t)}</span></li>`).join('');
+}
+function inviteHtml(code){
+  const close = '<button class="btn btn-wide" data-act="close-invite">Zapri</button>';
+  if (S.declined === code) return msgScreen('Povabila nisi sprejel', 'Če si premisliš, povezavo odpri znova.', close);
+  const inv = S.invites.find(i => i.id === code);
+  if (!inv) return msgScreen('Povabilo ne obstaja', 'Povezava je napačna ali pa je bilo povabilo izbrisano. Prosi za novo povezavo.', close);
+  const preview = S.isOwner || (inv.by && inv.by === S.me.id);
+  if (inv.cancelled) return msgScreen('Povabilo je preklicano', 'Prosi lastnika za novo povezavo.', close);
+  if (inv.usedBy && inv.usedBy !== S.me.id && !preview) return msgScreen('Povabilo je že uporabljeno', 'To povezavo je že nekdo sprejel. Prosi lastnika za novo.', close);
+  const p = S.pets.find(x => x.id === inv.petId) || pet() || S.pets[0];
+  const care = inv.role === 'skrbnik';
+  const sp = species(p);
+  const title = care ? `${p ? p.name : 'Žival'} je v tvojih rokah` : `Skupaj skrbimo za ${sp === 'macka' ? 'mačko' : 'psa'}`;
+  const sub = care ? (inv.until ? `Od danes do ${fmtUntil(inv.until)}.` : 'Dokler te lastnik ne odstrani.') : `${p ? p.name + ': ' : ''}vidiš in vpisuješ vse zapise, tako kot ostali doma.`;
+  const src = p && photoSrc(p.photo);
+  return `<section class="ob"><div class="ob-top">
+    ${preview ? `<div class="banner pv"><span>Predogled: tako povabilo vidi ${esc(inv.name || 'povabljeni')}.</span><button data-act="close-invite">Zapri</button></div>` : ''}
+    ${markHtml()}
+    <div class="hero"><div class="htxt"><span class="eyebrow">Povabilo</span><h1 class="ob-title q">${esc(title)}</h1><p class="ob-sub">${esc(sub)}</p></div><div class="ring">${src ? `<img src="${esc(src)}" alt="">` : `<span>${sp === 'macka' ? I.cat : I.dog}</span>`}</div></div>
+    <div class="card"><h3>Kaj lahko narediš</h3><ul class="rights">${rightsHtml(inv.role)}</ul></div>
+    <div class="field"><label class="lbl" for="inv-name">Tvoje ime</label><input id="inv-name" value="${esc(inv.name || '')}" autocomplete="name"></div>
+  </div><div class="ob-bot">
+    ${preview ? '<button class="btn btn-primary btn-wide" disabled>Sprejmi povabilo</button><span class="hint">V predogledu povabila ne moreš sprejeti.</span>' : `<button class="btn btn-primary btn-wide" data-act="accept-invite" data-code="${esc(code)}">Sprejmi povabilo</button><button class="link" data-act="decline-invite" data-code="${esc(code)}">Ne, hvala</button>`}
+  </div></section>`;
+}
+async function acceptInvite(code, btn){
+  const inv = S.invites.find(i => i.id === code); if (!inv) return;
+  if (!S.me.id) { toast('Za sprejem povabila moraš biti prijavljen.'); return; }
+  if (!S.canWrite) { toast('Za sprejem potrebuješ dostop za urejanje. Prosi lastnika, da ti ga dovoli v meniju Deli.'); return; }
+  const nm = ($('#inv-name') && $('#inv-name').value.trim()) || inv.name || '';
+  if (btn) { btn.disabled = true; btn.textContent = 'Sprejemam …'; }
+  const ok = await w(() => col('members').doc(S.me.id).set({ role: inv.role === 'skrbnik' ? 'skrbnik' : 'druzina', name:nm, until: inv.role === 'skrbnik' ? (inv.until || null) : null, pets: inv.petId ? [inv.petId] : [], invite: code, invitedBy: inv.by || null, joinedAt: Date.now() }));
+  if (!ok) { if (btn) { btn.disabled = false; btn.textContent = 'Sprejmi povabilo'; } return; }
+  await w(() => col('invites').doc(code).update({ usedBy: S.me.id, usedAt: Date.now() }));
+  if (inv.petId) { S.petId = inv.petId; LS.set('dano.pet', inv.petId); }
+  location.hash = 'danes';
+  toast('Povabilo je sprejeto.');
+}
+
+/* Prvi zagon */
+function obHtml(){
+  const o = S.ob;
+  if (o.step === 'a') {
+    return `<section class="ob"><div class="ob-top">${markHtml()}
+      <h1 class="ob-title">Za koga skrbiš?</h1>
+      <p class="ob-sub">Hrana, zdravila in cepljenja na enem mestu. Vsi doma vidijo, kdo je kaj že dal.</p>
+      <div class="choices">
+        <button class="choice" data-act="ob-species" data-s="pes"><span class="ic">${I.dog}</span><span><b>Pes</b><small>Dodaj psa</small></span></button>
+        <button class="choice" data-act="ob-species" data-s="macka"><span class="ic">${I.cat}</span><span><b>Mačka</b><small>Dodaj mačko</small></span></button>
+      </div>
+      <p class="hint" style="margin:0">Več živali lahko dodaš kasneje.</p></div>
+      <div class="ob-bot">${o.adding ? '<button class="btn btn-wide" data-act="ob-cancel">Prekliči</button>' : '<button class="btn btn-wide" data-act="ob-invite-help">Imam povabilo</button>'}</div></section>`;
+  }
+  const bar = (n) => `<div class="obbar"><button class="back" data-act="ob-back">${I.back}Nazaj</button><span class="hint">${n} od 2</span></div>`;
+  if (o.step === 'b') {
+    return `<section class="ob"><div class="ob-top">${bar(1)}
+      <h1 class="ob-title q">Kako je ime ${o.species === 'macka' ? 'tvoji mački' : 'tvojemu psu'}?</h1>
+      ${canPhoto() ? `<button class="photo-pick" data-act="ob-photo"><span class="circ2">${o.photoUrl ? `<img src="${esc(o.photoUrl)}" alt="">` : I.cam}</span><span><b>${o.photoUrl ? 'Zamenjaj sliko' : 'Dodaj sliko'}</b><small class="hint">Pokaže se na vrhu vsakega zaslona.</small></span></button>` : ''}
+      <div class="field"><label class="lbl" for="ob-name">Ime</label><input id="ob-name" value="${esc(o.name)}" autocomplete="off" enterkeyhint="next"></div>
+      <div class="grid2"><div class="field"><label class="lbl" for="ob-birth">Rojstvo</label><input id="ob-birth" type="date" value="${esc(o.birth)}" max="${today()}"></div>
+      <div class="field"><label class="lbl" for="ob-kg">Teža v kg</label><input id="ob-kg" inputmode="decimal" value="${esc(o.kg)}" placeholder="neobvezno"></div></div>
+      <div class="field"><label class="lbl" for="ob-breed">Pasma</label><input id="ob-breed" value="${esc(o.breed)}" placeholder="neobvezno"></div>
+    </div><div class="ob-bot"><button class="btn btn-primary btn-wide" id="ob-next" data-act="ob-next" ${o.name.trim() ? '' : 'disabled'}>Naprej</button></div></section>`;
+  }
+  const presets = ['07:00','12:00','18:00'];
+  const all = [...new Set([...presets, ...o.times])].sort();
+  return `<section class="ob"><div class="ob-top">${bar(2)}
+    <h1 class="ob-title q">Kdaj ${esc(o.name.trim())} je?</h1>
+    <div class="tchips" role="group" aria-label="Ure obrokov">${all.map(t => `<button class="tchip" data-act="ob-time" data-t="${t}" aria-pressed="${o.times.includes(t)}">${t}</button>`).join('')}<button class="tchip add" data-act="ob-addtime-show">+ Druga ura</button></div>
+    ${o.addTime ? '<div class="trow"><input type="time" id="ob-newtime" value="15:00" aria-label="Nova ura"><button class="btn-sm" data-act="ob-addtime">Dodaj</button></div>' : ''}
+    <div class="field"><label class="lbl" for="ob-amount">Koliko na obrok</label><input id="ob-amount" value="${esc(o.amount)}" placeholder="npr. 200 g granul"></div>
+    ${canScan() ? `<div class="stack"><div class="eyebrow">Če imaš pri roki, sicer kasneje</div>
+      <div class="opt"><span class="ic">${I.book}</span><div class="rmain"><div class="n">Cepilna knjižica</div><div class="sub">Slikaj jo, preberem datume in nastavim opomnike.</div></div><button class="btn-sm" data-act="ob-scan" data-what="knjizica">Slikaj</button></div>
+      <div class="opt"><span class="ic">${I.pill}</span><div class="rmain"><div class="n">Zdravilo, ki ga jemlje zdaj</div><div class="sub">Slikaj ovojnico ali škatlico.</div></div><button class="btn-sm" data-act="ob-scan" data-what="zdravilo">Slikaj</button></div></div>` : ''}
+  </div><div class="ob-bot"><button class="btn btn-primary btn-wide" data-act="ob-finish">Končaj</button></div></section>`;
+}
+async function finishOnboarding(){
+  const o = S.ob; if (!o || o.saving) return false;
+  const name = o.name.trim(); if (!name) { o.step = 'b'; render(); return false; }
+  o.saving = true;
+  const id = rid();
+  let photo = null;
+  if (o.photoFile) { try { photo = await makePetPhoto(o.photoFile); } catch(e){ toast(uploadMsg(e, 'Slike')); } }
+  const ok = await w(() => col('pets').doc(id).set({ name, species:o.species, breed:o.breed.trim(), birth:o.birth || null, chip:'', allergies:'', vetName:'', vetPhone:'', note:'', photo, createdAt:Date.now(), example:false }));
+  if (!ok) { o.saving = false; return false; }
+  for (const t of [...new Set(o.times)].sort()) {
+    await w(() => col('schedules').doc(rid()).set({ petId:id, kind:'hrana', name:mealName(t), dose:o.amount.trim(), times:[t], startDate:today(), endDate:null, note:'', perDose:1, unit:'tablet', stock:null, stockAt:null, photos:[], by:S.me.id || null, createdAt:Date.now(), example:false }));
+  }
+  const kg = Number(String(o.kg || '').replace(',', '.'));
+  if (kg > 0 && kg < 150) await w(() => col('events').doc(rid()).set({ petId:id, kind:'teza', title:'Teža', kg, date:today(), by:S.me.id || null, createdAt:Date.now(), example:false }));
+  if (o.photoUrl) { try { URL.revokeObjectURL(o.photoUrl); } catch(e){} }
+  S.petId = id; LS.set('dano.pet', id); S.ob = null;
+  if (location.hash !== '#danes') location.hash = 'danes'; else render();
+  return true;
+}
+
+/* Zdravje */
+function zdravjeHtml(){
+  const t = today();
+  const sch = mine(S.schedules).sort((a,b) => (a.kind === b.kind ? 0 : a.kind === 'hrana' ? 1 : -1) || String(a.name).localeCompare(String(b.name),'sl'));
+  const act = sch.filter(s => !s.endDate || s.endDate >= t), ended = sch.filter(s => s.endDate && s.endDate < t);
+  let h = `<section class="sec"><h2>Hranjenje in zdravila</h2>${S.canWrite ? `<div class="btns">${canScan() ? `<button class="btn-sm" data-act="scan-med">${I.cam}Slikaj ovojnico</button>` : ''}<button class="btn-sm dark" data-act="new-sched">${I.plus}Dodaj</button></div>` : ''}`;
+  h += act.length ? `<div class="stack">${act.map(schedCard).join('')}</div>` : emptyCard('Ni aktivnih hranjenj ali zdravil.', 'Dodaj obrok ali zdravilo z uro, pa ga boš v zavihku Danes odkljukal.');
+  if (ended.length) h += `<details class="ended"><summary>Zaključeno (${ended.length})</summary><div class="stack" style="margin-top:10px">${ended.map(schedCard).join('')}</div></details>`;
+  h += '</section>';
+  const rem = reminders();
+  h += `<section class="sec"><h2>Cepljenja, pregledi, zajedavci</h2>${S.canWrite ? `<div class="btns">${canScan() ? `<button class="btn-sm" data-act="scan-book">${I.cam}Slikaj knjižico</button>` : ''}<button class="btn-sm dark" data-act="new-event">${I.plus}Vpis</button></div>` : ''}`;
+  h += rem.length ? `<div class="rows">${rem.map(remRow).join('')}</div>` : emptyCard('Še ni vpisanih rokov.', 'Vpiši zadnje cepljenje ali tableto proti klopom in nastavi naslednji rok. Opomnik se pokaže v zavihku Danes.');
+  h += '</section>';
+  const ws = weights();
+  h += `<section class="sec"><div class="sec-head"><h2>Teža</h2>${S.canWrite ? `<button class="btn-sm dark" data-act="new-weight">${I.plus}Meritev</button>` : ''}</div>`;
+  if (ws.length >= 2) h += `<div class="card"><div class="chart">${weightChart(ws)}</div><p class="hint" style="margin:0">${esc(weightNote(ws))}</p></div>`;
+  else if (ws.length === 1) h += `<div class="card"><p style="margin:0"><b>${num(ws[0].kg)} kg</b> · ${fmtDate(ws[0].date)}</p><p class="hint" style="margin:0">Krivulja se pokaže po drugi meritvi.</p></div>`;
+  else h += emptyCard('Še ni meritev teže.', 'Odmerki zdravil in tablet proti zajedavcem so vezani na težo, zato jo vpiši ob vsakem tehtanju.');
+  return h + '</section>';
+}
+function schedCard(s){
+  const t = today();
+  const period = s.endDate ? `${fmtDate(s.startDate || t)} – ${fmtDate(s.endDate)}` : (s.startDate && s.startDate > t ? `od ${fmtDate(s.startDate)}` : 'stalno');
+  const st = stockInfo(s);
+  const logs = S.doses.filter(d => d.scheduleId === s.id).sort((a,b) => b.givenAt - a.givenAt).slice(0,3);
+  const sub = [s.dose, listJoin(s.times || [])].filter(Boolean).join(' · ');
+  const stPill = !st ? '' : st.daysLeft <= 0 ? '<span class="pill warn">zmanjkalo</span>' : `<span class="pill ${st.daysLeft <= 2 ? 'warn' : 'edge'}">za ${st.daysLeft} ${dni(st.daysLeft)}</span>`;
+  return `<article class="card"><div class="card-head"><div class="hl"><span class="tile">${kindIcon(s)}</span><div><div class="kindtag">${s.kind === 'zdravilo' ? 'Zdravilo' : 'Hranjenje'}</div><h3>${esc(s.name)}</h3>${sub ? `<div class="sub">${esc(sub)}</div>` : ''}</div></div>${S.canWrite ? `<button class="btn-add" data-act="edit-sched" data-id="${esc(s.id)}">${I.edit}Uredi</button>` : ''}</div>
+  <dl class="kv"><div><dt>Obdobje</dt><dd>${period}</dd></div>${st ? `<div><dt>Zaloga</dt><dd>še ${num(st.left)} ${esc(st.unit)}${stPill}</dd></div>` : ''}${s.note ? `<div><dt>Opomba</dt><dd>${esc(s.note)}</dd></div>` : ''}</dl>
+  ${logs.length ? `<div class="kv-block"><div class="eyebrow">Zadnji vpisi</div><ul class="lastlog">${logs.map(d => `<li class="${d.undoneAt ? 'off' : ''}">${d.undoneAt ? I.undo : I.check}<span>${cap(dayWord(d.givenAt))} ${hm(new Date(d.givenAt))} · ${esc(who(d.by, d.example))}${d.undoneAt ? ' · razveljavljeno' : ''}</span></li>`).join('')}</ul></div>` : ''}
+  ${s.photos && s.photos.length ? `<div class="kv-block"><div class="eyebrow">Ovojnica in navodila</div>${photosHtml(s.photos)}</div>` : ''}
+  </article>`;
+}
+function weightNote(ws){
+  const a = ws[ws.length-2], b = ws[ws.length-1];
+  const diff = b.kg - a.kg;
+  const sign = diff > 0 ? '+' : diff < 0 ? '−' : '±';
+  return `Zadnja meritev ${fmtDate(b.date)}: ${num(b.kg)} kg (${sign}${num(Math.abs(diff))} kg od ${fmtDate(a.date)}).`;
+}
+function weightChart(ws){
+  const avail = ($('#view').clientWidth || 360) - 68;
+  const W = Math.max(260, Math.min(600, avail)), H = 172, L = 40, R = 58, T = 14, B = 26;
+  const xs = ws.map(x => parseYmd(x.date).getTime()), ys = ws.map(x => Number(x.kg));
+  let x0 = Math.min(...xs), x1 = Math.max(...xs); if (x1 === x0) { x0 -= 864e5*15; x1 += 864e5*15; }
+  let y0 = Math.floor(Math.min(...ys) - 0.4), y1 = Math.ceil(Math.max(...ys) + 0.4); if (y1 - y0 < 2) y1 = y0 + 2;
+  const X = v => L + (v - x0) / (x1 - x0) * (W - L - R), Y = v => T + (1 - (v - y0) / (y1 - y0)) * (H - T - B);
+  const pts = ws.map((x,i) => [X(xs[i]), Y(ys[i])]);
+  const line = pts.map((p,i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' ');
+  const area = `${line} L${pts[pts.length-1][0].toFixed(1)} ${H-B} L${pts[0][0].toFixed(1)} ${H-B} Z`;
+  const ticks = [y0, (y0+y1)/2, y1];
+  const lp = pts[pts.length-1];
+  let s = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Teža skozi čas, zadnja ${num(ys[ys.length-1])} kg">`;
+  s += ticks.map(v => `<line class="wc-grid" x1="${L}" x2="${W-R+6}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}"/><text class="wc-t" x="${L-8}" y="${(Y(v)+4).toFixed(1)}" text-anchor="end">${num(v)}</text>`).join('');
+  s += `<path class="wc-area" d="${area}"/><path class="wc-line" d="${line}"/>`;
+  s += pts.slice(0,-1).map(p => `<circle class="wc-pt" cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3"/>`).join('');
+  s += `<circle class="wc-last" cx="${lp[0].toFixed(1)}" cy="${lp[1].toFixed(1)}" r="5"/><text class="wc-tl" x="${(lp[0]+9).toFixed(1)}" y="${(lp[1]+4).toFixed(1)}">${num(ys[ys.length-1])} kg</text>`;
+  s += `<text class="wc-t" x="${L}" y="${H-6}" text-anchor="start">${esc(fmtDate(ws[0].date))}</text><text class="wc-t" x="${W-R}" y="${H-6}" text-anchor="end">${esc(fmtDate(ws[ws.length-1].date))}</text>`;
+  return s + '</svg>';
+}
+
+/* Časovnica */
+function casovnicaHtml(){
+  const F = {vse:null, cepljenje:['cepljenje'], pregled:['pregled'], zajedavci:['zajedavci'], opazanje:['opazanje'], teza:['teza']};
+  const lab = {vse:'Vse', cepljenje:'Cepljenja', pregled:'Pregledi', zajedavci:'Zajedavci', opazanje:'Opažanja', teza:'Teža'};
+  const f = Object.prototype.hasOwnProperty.call(F, S.filter) ? S.filter : 'vse';
+  const items = mine(S.events).filter(e => !F[f] || F[f].includes(e.kind)).sort((a,b) => (b.date + (b.time||'')).localeCompare(a.date + (a.time||'')) || (b.createdAt||0) - (a.createdAt||0));
+  let h = `<section class="sec"><div class="sec-head"><h2>Časovnica</h2>${S.canWrite ? `<div class="btns"><button class="btn-sm" data-act="new-note">${I.note}Opažanje</button><button class="btn-sm dark" data-act="new-event">${I.plus}Vpis</button></div>` : ''}</div>`;
+  h += `<div class="filters" role="group" aria-label="Pokaži">${Object.keys(F).map(k => `<button class="fchip" data-act="filter" data-f="${k}" aria-pressed="${k === f}">${lab[k]}</button>`).join('')}</div>`;
+  if (!items.length) return h + emptyCard(f === 'vse' ? 'Časovnica je še prazna.' : 'Tu še ni vpisov.', 'Vpiši opažanje, ko se kaj spremeni. Veterinar bo vprašal, od kdaj in kako pogosto se dogaja.') + '</section>';
+  let cur = '';
+  h += '<div>';
+  for (const e of items) {
+    const mk = String(e.date).slice(0,7);
+    if (mk !== cur) { if (cur) h += '</ol>'; cur = mk; const d = parseYmd(e.date); h += `<h3 class="month eyebrow">${MON_L[d.getMonth()]} ${d.getFullYear()}</h3><ol class="tl">`; }
+    h += tlItem(e);
+  }
+  return h + '</ol></div></section>';
+}
+function photosHtml(ps){
+  if (!ps || !ps.length) return '';
+  return `<div class="thumbs">${ps.map(p => p.type === 'application/pdf'
+    ? `<a class="pdf" href="/_blob/${encodeURIComponent(p.id)}" target="_blank" rel="noopener">PDF</a>`
+    : `<button class="thumb" data-act="photo" data-id="${esc(p.id)}" aria-label="Odpri fotografijo"><img src="/_blob/${encodeURIComponent(p.id)}" alt="" loading="lazy"></button>`).join('')}</div>`;
+}
+function tlItem(e){
+  const k = KINDS[e.kind] || KINDS.drugo;
+  const title = e.kind === 'teza' ? `${num(e.kg)} kg` : e.kind === 'opazanje' ? ((e.tags && e.tags.length) ? e.tags.join(', ') : 'Opažanje') : (e.title || k.l);
+  let bits = '';
+  if (e.batch) bits += `<div class="sub">Cepivo in serija: ${esc(e.batch)}</div>`;
+  if (e.note) bits += `<p class="tl-note">${esc(e.note)}</p>`;
+  if (e.nextDue) bits += `<div class="sub">Naslednji rok: ${fmtDate(e.nextDue)}</div>`;
+  bits += photosHtml(e.photos);
+  return `<li class="tl-item" style="--kc:${k.c}"><div class="tl-date">${fmtNum(e.date)}${e.time ? `<small>${esc(e.time)}</small>` : ''}</div><div class="tl-dot" aria-hidden="true"></div><div class="tl-body"><div class="tl-top"><span class="tl-tag${e.kind === 'opazanje' ? ' op' : ''}">${k.l}</span>${S.canWrite ? `<button class="btn-add" data-act="edit-event" data-id="${esc(e.id)}">${I.edit}Uredi</button>` : ''}</div><div class="n">${esc(title)}</div>${bits}<div class="by">vpis: ${esc(who(e.by, e.example))}</div></div></li>`;
+}
+
+/* Pes: profil, družina, nujna kartica */
+function kv(label, val, mono){
+  return `<div><dt>${label}</dt><dd class="${val ? (mono ? 'mono' : '') : 'none'}">${val ? esc(val) : '—'}</dd></div>`;
+}
+function emergencyText(p){
+  const t = today();
+  const lines = [];
+  lines.push([p.name, p.breed || (species(p) === 'macka' ? 'mačka' : 'pes'), p.birth ? `rojstvo ${fmtFull(p.birth)}` : ''].filter(Boolean).join(', '));
+  if (p.chip) lines.push(`Čip: ${chipFmt(p.chip)}`);
+  lines.push(`Alergije: ${p.allergies || 'ni znanih'}`);
+  const meds = mine(S.schedules).filter(s => s.kind === 'zdravilo' && activeOn(s, t));
+  lines.push(`Zdravila zdaj: ${meds.length ? meds.map(s => `${s.name}${s.dose ? ', ' + s.dose : ''} ob ${(s.times||[]).join(' in ')}${s.endDate ? ` (do ${fmtNum(s.endDate)})` : ''}`).join('; ') : 'nobeno'}`);
+  const food = mine(S.schedules).filter(s => s.kind === 'hrana' && activeOn(s, t));
+  if (food.length) lines.push(`Hranjenje: ${food.map(s => `${s.name} ob ${(s.times||[]).join(', ')}${s.dose ? ', ' + s.dose : ''}`).join('; ')}`);
+  const ws = weights(); if (ws.length) lines.push(`Teža: ${num(ws[ws.length-1].kg)} kg (${fmtNum(ws[ws.length-1].date)})`);
+  if (p.vetName || p.vetPhone) lines.push(`Veterinar: ${[p.vetName, p.vetPhone ? 'tel. ' + p.vetPhone : ''].filter(Boolean).join(', ')}`);
+  if (p.note) lines.push(`Navodila: ${p.note}`);
+  return lines.join('\n');
+}
+function peopleIds(){
+  const ids = new Set();
+  for (const d of S.doses) { if (d.by) ids.add(d.by); if (d.undoneBy) ids.add(d.undoneBy); }
+  for (const e of S.events) if (e.by) ids.add(e.by);
+  for (const s of S.schedules) if (s.by) ids.add(s.by);
+  for (const m of S.members) ids.add(m.id);
+  if (S.me.id) ids.add(S.me.id);
+  ids.delete('local');
+  return [...ids];
+}
+function familyRows(){
+  const byId = Object.fromEntries(S.members.map(m => [m.id, m]));
+  const rows = [], seen = new Set();
+  const add = (id, m) => { if (!id || seen.has(id)) return; seen.add(id); rows.push({ id, m }); };
+  if (S.me.id) add(S.me.id, byId[S.me.id] || (S.isOwner ? { role:'lastnik' } : null));
+  for (const m of S.members) add(m.id, m);
+  for (const id of peopleIds()) add(id, byId[id] || null);
+  return rows.filter(r => !(r.m && r.m.role === 'odstranjen'));
+}
+const pendingInvites = () => S.invites.filter(i => !i.usedBy && !i.cancelled).sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+function avatarHtml(id, name, cls){
+  const av = S.names[id] && S.names[id].avatar;
+  return `<span class="av ${cls || ''}">${av && cls !== 'pend' ? `<img src="${esc(av)}" alt="">` : esc((name || '?').charAt(0).toUpperCase())}</span>`;
+}
+function memberRow(r){
+  const m = r.m || { role:'druzina' };
+  const isMe = r.id === S.me.id;
+  const rl = m.role === 'lastnik' ? 'lastnik' : m.role === 'skrbnik' ? 'skrbnik' : 'druzina';
+  const name = isMe ? 'Ti' : nameOf(r.id);
+  const exp = rl === 'skrbnik' && m.until && m.until < today();
+  const sub = rl === 'lastnik' ? 'Lastnik · dodaja in odstranjuje člane' : rl === 'skrbnik' ? 'Skrbnik · današnji dan in nujna kartica' : 'Družinski član · vse pravice';
+  const pill = rl === 'skrbnik' ? (exp ? '<span class="pill warn">poteklo</span>' : m.until ? `<span class="pill edge">do ${fmtDate(m.until)}</span>` : '') : '';
+  const rm = (canManage() && !isMe && rl !== 'lastnik' && S.mode === 'db') ? `<button class="btn-sm" data-act="rm-member" data-id="${esc(r.id)}">Odstrani</button>` : '';
+  return `<div class="row member">${avatarHtml(r.id, name, rl === 'skrbnik' ? 'care' : '')}<div class="rmain"><div class="n">${esc(name)}</div><div class="sub">${esc(sub)}</div></div>${pill || rm ? `<div class="rside">${pill}${rm}</div>` : ''}</div>`;
+}
+function inviteRow(i){
+  const canAct = canManage() || (i.by && i.by === S.me.id);
+  const sub = `${i.role === 'skrbnik' ? 'Skrbnik' : 'Družinski član'} · povabilo poslano ${dayWord(i.createdAt || Date.now())}`;
+  return `<div class="row member">${avatarHtml('', i.name, 'pend')}<div class="rmain"><div class="n">${esc(i.name || 'Povabljeni')}</div><div class="sub">${esc(sub)}</div></div><div class="rside"><span class="pill">čaka</span>${canAct ? `<span class="btns"><button class="btn-sm" data-act="copy-link" data-code="${esc(i.id)}">Kopiraj</button><button class="btn-sm" data-act="cancel-invite" data-code="${esc(i.id)}">Prekliči</button></span>` : ''}</div></div>`;
+}
+function pesHtml(){
+  const p = pet();
+  const ws = weights();
+  const born = p.birth ? `${fmtFull(p.birth)} · ${ageOf(p.birth)}` : '';
+  const sex = p.sex === 'z' ? 'samica' : p.sex === 'm' ? 'samec' : '';
+  let h = `<section class="sec"><div class="sec-head"><h2>Profil</h2>${S.canWrite ? `<button class="btn-add" data-act="edit-pet">${I.edit}Uredi</button>` : ''}</div><div class="card"><dl class="kv">
+    ${kv('Pasma', p.breed ? cap(p.breed) : '')}${kv('Rojstvo', born)}${sex ? kv('Spol', sex) : ''}${kv('Teža', ws.length ? `${num(ws[ws.length-1].kg)} kg` : '')}${kv('Čip', p.chip ? chipFmt(p.chip) : '', true)}${kv('Alergije', p.allergies)}${kv('Veterinar', p.vetName)}${kv('Telefon', p.vetPhone, true)}
+  </dl>${p.note ? `<div class="kv-block"><div class="eyebrow">Navodila za skrbnika</div><p>${esc(p.note)}</p></div>` : ''}</div></section>`;
+  const rows = familyRows(), inv = pendingInvites();
+  h += `<section class="sec"><div class="sec-head"><h2>Družina in skrbniki</h2></div>`;
+  h += `<div class="rows">${rows.map(memberRow).join('')}${inv.map(inviteRow).join('')}</div>`;
+  if (canInvite()) h += `<button class="add-row" data-act="new-member"><span class="plus">${I.plus}</span><span><b>Dodaj člana ali skrbnika</b><small>Družina, varuh, sosed ali pasji hotel</small></span></button>`;
+  h += `<div class="btns"><button class="btn-sm" data-act="preview-care">${I.user}Predogled: kaj vidi skrbnik</button></div>`;
+  h += `<p class="hint" style="margin:0">Vsi vidijo iste zapise in kdo je kaj dal. Skrbniku dostop sam poteče.</p></section>`;
+  h += `<section class="sec"><div class="sec-head"><h2>Nujna kartica</h2><button class="btn-sm" data-act="copy-card">${I.copy}Kopiraj</button></div><div class="ecard"><div class="eyebrow">Za varuha, hotel za živali ali urgenco</div><pre class="etext" id="etext">${esc(emergencyText(p))}</pre></div></section>`;
+  const pets = sortedPets();
+  h += `<section class="sec"><div class="sec-head"><h2>Živali</h2>${S.canWrite ? `<button class="btn-add" data-act="new-pet">${I.plus}Dodaj žival</button>` : ''}</div><div class="rows">${pets.map(x => `<div class="row"><span class="tile sm">${species(x) === 'macka' ? I.cat : I.dog}</span><div class="rmain"><div class="n">${esc(x.name || 'Brez imena')}</div><div class="sub">${esc(x.breed ? cap(x.breed) : (species(x) === 'macka' ? 'Mačka' : 'Pes'))}</div></div>${x.id === S.petId ? '<span class="pill ok">izbrana</span>' : `<button class="btn-sm" data-act="pet" data-id="${esc(x.id)}">Izberi</button>`}</div>`).join('')}</div></section>`;
+  const ex = ['pets','schedules','doses','events'].reduce((n,c) => n + S[c].filter(x => x.example).length, 0);
+  if (ex && S.canWrite) h += `<section class="sec"><h2>Primeri</h2><div class="card"><p style="margin:0">Urnik, roki in vpisi so za zdaj ${ex} izmišljenih primerov za preizkus. Ko jih ne rabiš več, jih počisti. Tvoji zapisi ostanejo.</p><div><button class="btn btn-danger" data-act="clear-ex">Počisti primere</button></div></div></section>`;
+  h += `<p class="hint" style="padding-top:18px">${S.mode === 'db' ? 'Zapisi se shranjujejo za vse, ki imajo dostop do te strani.' : 'Predogled: zapisi ostanejo samo v tem brskalniku.'}</p>`;
+  return h;
+}
+function petMenu(){
+  const pets = sortedPets();
+  openInfo('Živali', `<div class="rows">${pets.map(x => `<div class="row"><span class="tile sm">${species(x) === 'macka' ? I.cat : I.dog}</span><div class="rmain"><div class="n">${esc(x.name || 'Brez imena')}</div><div class="sub">${esc(x.breed ? cap(x.breed) : (species(x) === 'macka' ? 'Mačka' : 'Pes'))}</div></div>${x.id === S.petId ? '<span class="pill ok">izbrana</span>' : `<button class="btn-sm" data-act="pet" data-id="${esc(x.id)}">Izberi</button>`}</div>`).join('')}</div>${S.canWrite ? `<button class="add-row" data-act="new-pet"><span class="plus">${I.plus}</span><span><b>Dodaj žival</b><small>Psa ali mačko, z lastnim urnikom</small></span></button>` : ''}`);
+}
+
+/* ---------- Dejanja ---------- */
+async function give(key, force){
+  const sl = S.slotIndex.get(key); if (!sl) return;
+  if (!force) { const msg = guardMsg(sl); if (msg) { S.confirm = {key, msg}; render(); return; } }
+  S.confirm = null; S.justGiven = key;
+  const ok = await w(() => col('doses').doc(key).set({petId:sl.s.petId, scheduleId:sl.s.id, date:sl.date, time:sl.time, givenAt:Date.now(), by:S.me.id || null}));
+  if (ok) toast(`${sl.s.name}: označeno ob ${hm(new Date())}.`, {a:'undo', key, label:'Razveljavi'});
+}
+async function undo(key){
+  S.confirm = null; $('#toast').hidden = true;
+  await w(() => col('doses').doc(key).update({undoneAt:Date.now(), undoneBy:S.me.id || null}));
+}
+async function clearExamples(){
+  for (const c of ['doses','events','schedules','pets']) {
+    for (const d of S[c].filter(x => x.example)) { if (!(await w(() => col(c).doc(d.id).delete()))) return; }
+  }
+  toast('Primeri so počiščeni.');
+}
+async function deletePet(id){
+  for (const c of ['doses','events','schedules']) {
+    for (const d of S[c].filter(x => x.petId === id)) { if (!(await w(() => col(c).doc(d.id).delete()))) return; }
+  }
+  await w(() => col('pets').doc(id).delete());
+  S.petId = null;
+  toast('Žival je izbrisana.');
+}
+async function removeMember(id){
+  const m = S.members.find(x => x.id === id);
+  const data = Object.assign({}, m || {}, { role:'odstranjen', removedAt:Date.now(), removedBy:S.me.id || null });
+  delete data.id;
+  if (await w(() => col('members').doc(id).set(data))) toast('Odstranjeno s seznama.');
+}
+function copyText(txt, okMsg, el){
+  const fallback = () => { if (!el) { toast('Kopiranje ni uspelo.'); return; } const r = document.createRange(); r.selectNodeContents(el); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast('Besedilo je označeno. Kopiraj ga ročno.'); };
+  try { navigator.clipboard.writeText(txt).then(() => toast(okMsg), fallback); } catch(e) { fallback(); }
+}
+let tt;
+function toast(msg, act){
+  const el = $('#toast');
+  el.innerHTML = `<span>${esc(msg)}</span>${act ? `<button data-act="${act.a}" data-key="${esc(act.key)}">${I.undo}${esc(act.label)}</button>` : ''}`;
+  el.hidden = false; clearTimeout(tt); tt = setTimeout(() => { el.hidden = true; }, act ? 6500 : 3800);
+}
+function armed(t, label){
+  if (t.dataset.armed) return true;
+  t.dataset.armed = '1'; t.dataset.orig = t.textContent; t.textContent = label || 'Res izbrišem?';
+  setTimeout(() => { if (t.isConnected && t.dataset.armed) { delete t.dataset.armed; t.textContent = t.dataset.orig; } }, 4000);
+  return false;
+}
+
+/* ---------- Obrazci ---------- */
+const sheet = $('#sheet');
+function stopReading(){ if (S.readCtl) { const c = S.readCtl; S.readCtl = null; c.abort(); } }
+sheet.addEventListener('close', () => { stopReading(); sheet.innerHTML = ''; });
+function closeSheet(){ stopReading(); if (sheet.open) sheet.close(); sheet.innerHTML = ''; }
+function openInfo(title, body){
+  sheet.innerHTML = `<div class="sheet-in"><div class="sheet-head"><h2>${esc(title)}</h2><button type="button" class="x" data-act="close" aria-label="Zapri">${I.x}</button></div>${body}</div>`;
+  if (!sheet.open) sheet.showModal();
+}
+function openSheet(title, body, submitLabel, onSubmit, extra){
+  sheet.innerHTML = `<form class="sheet-in" id="sf" novalidate><div class="sheet-head"><h2>${esc(title)}</h2><button type="button" class="x" data-act="close" aria-label="Zapri">${I.x}</button></div>${body}<div class="sheet-foot">${extra || ''}<span class="sp"></span><button type="button" class="btn" data-act="close">Prekliči</button><button type="submit" class="btn btn-primary" id="sfSubmit">${esc(submitLabel)}</button></div></form>`;
+  const f = $('#sf');
+  f.addEventListener('submit', async ev => {
+    ev.preventDefault();
+    const b = $('#sfSubmit'); b.disabled = true; const lbl = b.textContent; b.textContent = 'Shranjujem …';
+    let ok = false;
+    try { ok = await onSubmit(new FormData(f), f); } catch(e) { console.warn(e); toast('Shranjevanje ni uspelo.'); }
+    if (ok === true) closeSheet(); else if (b.isConnected) { b.disabled = false; b.textContent = lbl; }
+  });
+  if (!sheet.open) sheet.showModal();
+  return f;
+}
+const val = (fd, k) => String(fd.get(k) || '').trim();
+const delBtn = (act, id) => `<button type="button" class="btn btn-danger" data-act="${act}" data-id="${esc(id)}">Izbriši</button>`;
+
+function petForm(p){
+  const v = p;
+  openSheet('Uredi profil', `
+    <div class="field"><label class="lbl" for="p-name">Ime</label><input id="p-name" name="name" required autocomplete="off" value="${esc(v.name)}"></div>
+    <fieldset><legend class="lbl">Vrsta</legend><div class="seg">
+      <label><input type="radio" id="p-s1" name="species" value="pes" ${species(v) === 'pes' ? 'checked' : ''}>Pes</label>
+      <label><input type="radio" id="p-s2" name="species" value="macka" ${species(v) === 'macka' ? 'checked' : ''}>Mačka</label></div></fieldset>
+    <fieldset><legend class="lbl">Spol</legend><div class="seg">
+      <label><input type="radio" id="p-x1" name="sex" value="z" ${v.sex === 'z' ? 'checked' : ''}>Samica</label>
+      <label><input type="radio" id="p-x2" name="sex" value="m" ${v.sex === 'm' ? 'checked' : ''}>Samec</label></div></fieldset>
+    <div class="grid2"><div class="field"><label class="lbl" for="p-breed">Pasma</label><input id="p-breed" name="breed" value="${esc(v.breed)}"></div>
+    <div class="field"><label class="lbl" for="p-birth">Datum rojstva</label><input id="p-birth" type="date" name="birth" value="${esc(v.birth)}"></div></div>
+    <div class="field"><label class="lbl" for="p-chip">Številka čipa</label><input id="p-chip" name="chip" class="mono" inputmode="numeric" value="${esc(v.chip)}" placeholder="15 številk"></div>
+    <div class="field"><label class="lbl" for="p-all">Alergije</label><input id="p-all" name="allergies" value="${esc(v.allergies)}" placeholder="npr. piščanec"></div>
+    <div class="grid2"><div class="field"><label class="lbl" for="p-vet">Veterinar</label><input id="p-vet" name="vetName" value="${esc(v.vetName)}"></div>
+    <div class="field"><label class="lbl" for="p-vtel">Telefon</label><input id="p-vtel" name="vetPhone" type="tel" value="${esc(v.vetPhone)}"></div></div>
+    <div class="field"><label class="lbl" for="p-note">Navodila za skrbnika</label><textarea id="p-note" name="note" rows="3" placeholder="npr. Tableto zavij v priboljšek. Boji se ognjemeta.">${esc(v.note)}</textarea><small>Skrbnik jih vidi na svojem zaslonu.</small></div>
+    ${canPhoto() ? `<div class="field"><label class="lbl" for="p-photo">Fotografija</label><input id="p-photo" type="file" name="petphoto" accept="image/*"></div>` : ''}`,
+    'Shrani', async fd => {
+      const name = val(fd,'name'); if (!name) { toast('Vpiši ime.'); return false; }
+      let photo = v.photo || null;
+      const pf = fd.get('petphoto');
+      if (pf && pf.size) { try { photo = (await makePetPhoto(pf)) || photo; } catch(e) { toast(uploadMsg(e, 'Slike')); } }
+      const doc = Object.assign({}, v, {name, species: fd.get('species') === 'macka' ? 'macka' : 'pes', sex: ['z','m'].includes(fd.get('sex')) ? fd.get('sex') : (v.sex || null), breed:val(fd,'breed'), birth:val(fd,'birth') || null, chip:val(fd,'chip'), allergies:val(fd,'allergies'), vetName:val(fd,'vetName'), vetPhone:val(fd,'vetPhone'), note:val(fd,'note'), photo, example:false});
+      delete doc.id;
+      return w(() => col('pets').doc(v.id).set(doc));
+    }, `<button type="button" class="btn btn-danger" data-act="del-pet" data-id="${esc(v.id)}">Izbriši žival</button>`);
+}
+
+function memberForm(defRole){
+  const owner = canManage();
+  const r0 = owner ? (defRole || 'druzina') : 'skrbnik';
+  const f = openSheet('Dodaj člana', `
+    <p class="help" style="margin:0">Vsak, ki ga dodaš, vidi iste zapise kot ti in lahko odkljuka, kar je opravljeno.</p>
+    ${owner ? `<fieldset><legend class="lbl">Vloga</legend><div class="seg">
+      <label><input type="radio" id="m-r1" name="role" value="druzina" ${r0 === 'druzina' ? 'checked' : ''}>Družinski član</label>
+      <label><input type="radio" id="m-r2" name="role" value="skrbnik" ${r0 === 'skrbnik' ? 'checked' : ''}>Skrbnik</label></div></fieldset>`
+      : '<input type="hidden" name="role" value="skrbnik"><p class="info">Družinske člane dodaja lastnik. Ti lahko povabiš skrbnika.</p>'}
+    <ul class="rights" data-for="druzina" ${r0 === 'druzina' ? '' : 'hidden'}>${rightsHtml('druzina')}</ul>
+    <ul class="rights" data-for="skrbnik" ${r0 === 'skrbnik' ? '' : 'hidden'}><li style="font-weight:600">Skrbnik je varuh, sosed ali hotel za živali.</li>${rightsHtml('skrbnik')}</ul>
+    <div class="field"><label class="lbl" for="m-name">Ime</label><input id="m-name" name="name" required autocomplete="off" placeholder="npr. Tine"></div>
+    <div class="field" id="m-untilf" ${r0 === 'skrbnik' ? '' : 'hidden'}><label class="lbl" for="m-until">Dostop do</label><input id="m-until" type="date" name="until" value="${ymd(addDays(new Date(), 6))}" min="${today()}">
+      <div class="qchips"><button type="button" class="qchip" data-act="until" data-n="1">1 dan</button><button type="button" class="qchip" data-act="until" data-n="3">3 dni</button><button type="button" class="qchip" data-act="until" data-n="7">1 teden</button><button type="button" class="qchip" data-act="until" data-n="0">brez roka</button></div></div>`,
+    'Ustvari povabilo', async fd => {
+      const rl = (owner && fd.get('role') === 'druzina') ? 'druzina' : 'skrbnik';
+      const name = val(fd,'name'); if (!name) { toast('Vpiši ime.'); return false; }
+      const until = rl === 'skrbnik' ? (val(fd,'until') || null) : null;
+      if (until && until < today()) { toast('Datum je v preteklosti.'); return false; }
+      const code = newCode();
+      const ok = await w(() => col('invites').doc(code).set({ role:rl, name, until, petId: rl === 'skrbnik' ? S.petId : null, by:S.me.id || null, createdAt:Date.now(), usedBy:null, cancelled:false }));
+      if (ok) setTimeout(() => inviteReady(code, name), 60);
+      return ok;
+    });
+  f.addEventListener('change', ev => {
+    if (ev.target.name !== 'role') return;
+    const r = ev.target.value;
+    f.querySelectorAll('.rights').forEach(u => { u.hidden = u.dataset.for !== r; });
+    $('#m-untilf').hidden = r !== 'skrbnik';
+  });
+}
+function inviteReady(code, name){
+  const link = ARTIFACT_URL + '#povabilo-' + code;
+  openInfo('Povabilo je pripravljeno', `
+    <ol class="steps"><li>V meniju <b>Deli</b> dodaj osebo ${esc(name)} po e-pošti in ji dovoli urejanje. Sicer bo zapise samo gledala.</li><li>Pošlji ji to povezavo:</li></ol>
+    <div class="linkbox"><code id="invLink">${esc(link)}</code><button class="btn-sm" data-act="copy-link" data-code="${esc(code)}">Kopiraj</button></div>
+    ${S.mode === 'local' ? '<p class="info">To je predogled. Povezava deluje šele na objavljeni strani.</p>' : ''}
+    <p class="help" style="margin:0">Povezava velja, dokler je nekdo ne sprejme. Prekličeš jo v zavihku ${species(pet()) === 'macka' ? 'Mačka' : 'Pes'}.</p>
+    <div class="sheet-foot"><button class="btn" data-act="preview-invite" data-code="${esc(code)}">Predogled povabila</button><span class="sp"></span><button class="btn btn-primary" data-act="close">Končano</button></div>`);
+}
+
+let tIdx = 0;
+const timeRow = (t, cls) => { tIdx++; return `<div class="trow"><input type="time" id="s-time-${tIdx}" name="time" class="${cls || ''}" value="${esc(t)}" aria-label="Ura"><button type="button" class="x" data-act="rm-time" aria-label="Odstrani uro">${I.x}</button></div>`; };
+const UNSURE_L = {name:'ime', dose:'odmerek', times:'ure', timesPerDay:'ure', durationDays:'trajanje', quantity:'zaloga', unit:'enota', instructions:'navodila'};
+function schedForm(s, draft){
+  const v = s || Object.assign({kind:'hrana', times:['08:00'], startDate:today(), perDose:1, unit:'tablet'}, draft ? draft.prefill : {});
+  const st = s ? stockInfo(s) : null;
+  const un = draft ? draft.unsure : new Set();
+  const U = (...k) => k.some(x => un.has(x)) ? 'unsure' : '';
+  const stockVal = st ? num(st.left) : (!s && v.stock != null ? num(v.stock) : '');
+  const unsureTxt = [...new Set([...un].map(k => UNSURE_L[k]).filter(Boolean))].join(', ');
+  const top = draft
+    ? `<div class="draft"><img src="${esc(draft.url)}" alt=""><div><p><b>Prebrano s fotografije${draft.n > 1 ? ` (${draft.i + 1} od ${draft.n})` : ''}.</b> Preveri ime, odmerek in ure, preden shraniš.</p>${unsureTxt ? `<p>Nisem prepričan: ${esc(unsureTxt)}. Ta polja so označena.</p>` : ''}${draft.manual ? '<p>Fotografija bo shranjena k zdravilu.</p>' : ''}</div></div>`
+    : (!s && canScan() ? `<div class="info" style="display:flex;gap:12px;align-items:center"><span style="flex:1">Imaš ovojnico ali škatlico z navodili veterinarja? Slikaj jo in podatke izpolnim namesto tebe.</span><button type="button" class="btn-sm" data-act="scan-med">${I.cam}Slikaj</button></div>` : '');
+  tIdx = 0;
+  openSheet(s ? 'Uredi' : draft ? 'Novo zdravilo' : 'Hranjenje ali zdravilo', `${top}
+    <fieldset><legend class="lbl">Vrsta</legend><div class="seg">
+      <label><input type="radio" id="s-k1" name="kind" value="hrana" ${v.kind !== 'zdravilo' ? 'checked' : ''}>Hranjenje</label>
+      <label><input type="radio" id="s-k2" name="kind" value="zdravilo" ${v.kind === 'zdravilo' ? 'checked' : ''}>Zdravilo</label></div></fieldset>
+    <div class="field"><label class="lbl" for="s-name">Ime</label><input id="s-name" name="name" class="${U('name')}" required autocomplete="off" value="${esc(v.name)}" placeholder="npr. Zajtrk ali ime zdravila"></div>
+    <div class="field"><label class="lbl" for="s-dose">Odmerek</label><input id="s-dose" name="dose" class="${U('dose')}" value="${esc(v.dose)}" placeholder="npr. 150 g ali 1 tableta"></div>
+    <div class="field"><span class="lbl">Ure</span><div class="trows" id="trows">${(v.times && v.times.length ? v.times : ['08:00']).map(t => timeRow(t, U('times','timesPerDay'))).join('')}</div><div><button type="button" class="btn-add" data-act="add-time">+ Dodaj uro</button></div></div>
+    <div class="grid2"><div class="field"><label class="lbl" for="s-start">Od</label><input id="s-start" type="date" name="startDate" value="${esc(v.startDate || today())}"></div>
+    <div class="field"><label class="lbl" for="s-end">Do</label><input id="s-end" type="date" name="endDate" class="${U('durationDays')}" value="${esc(v.endDate || '')}"></div></div>
+    <div class="qchips"><span class="hint">Trajanje:</span>${[5,7,10,14].map(n => `<button type="button" class="qchip" data-act="dur" data-n="${n}">${n} dni</button>`).join('')}<button type="button" class="qchip" data-act="dur" data-n="0">stalno</button></div>
+    <details ${stockVal !== '' ? 'open' : ''}><summary class="lbl">Zaloga</summary>
+      <div class="grid3" style="margin-top:10px">
+        <div class="field"><label class="lbl" for="s-stock">Na voljo</label><input id="s-stock" name="stock" class="${U('quantity')}" inputmode="decimal" value="${esc(stockVal)}" placeholder="npr. 20"></div>
+        <div class="field"><label class="lbl" for="s-per">Na odmerek</label><input id="s-per" name="perDose" inputmode="decimal" value="${esc(num(v.perDose ?? 1))}"></div>
+        <div class="field"><label class="lbl" for="s-unit">Enota</label><input id="s-unit" name="unit" value="${esc(v.unit || 'tablet')}"></div>
+      </div>
+      <p class="help" style="margin:8px 0 0">Vsaka kljukica odšteje odmerek. Opozorilo dobiš, ko zaloge ostane za manj kot teden ali je zmanjka pred koncem zdravljenja.</p>
+    </details>
+    <div class="field"><label class="lbl" for="s-note">Opomba</label><textarea id="s-note" name="note" rows="2" placeholder="npr. v priboljšku, po jedi">${esc(v.note)}</textarea></div>
+    ${draft ? '' : photoField(s ? s.photos : [])}`,
+    'Shrani', async fd => {
+      const name = val(fd,'name');
+      const times = [...new Set(fd.getAll('time').map(String).filter(Boolean))].sort();
+      if (!name) { toast('Vpiši ime.'); return false; }
+      if (!times.length) { toast('Dodaj vsaj eno uro.'); return false; }
+      const start = val(fd,'startDate') || today(), end = val(fd,'endDate') || null;
+      if (end && end < start) { toast('Datum »Do« je pred datumom »Od«.'); return false; }
+      const per = Number(val(fd,'perDose').replace(',','.')) || 1;
+      const doc = {petId: s ? s.petId : S.petId, kind: fd.get('kind') === 'zdravilo' ? 'zdravilo' : 'hrana', name, dose:val(fd,'dose'), times, startDate:start, endDate:end, note:val(fd,'note'), perDose:per, unit:val(fd,'unit') || 'tablet', by: s ? (s.by || null) : (S.me.id || null), createdAt: s ? (s.createdAt || Date.now()) : Date.now(), example:false};
+      const raw = val(fd,'stock').replace(',','.');
+      if (raw === '') { doc.stock = null; doc.stockAt = null; }
+      else {
+        const n = Number(raw);
+        if (!isFinite(n) || n < 0) { toast('Zaloga mora biti število.'); return false; }
+        if (st && Math.abs(st.left - n) < 1e-9 && Number(s.perDose || 1) === per) { doc.stock = s.stock; doc.stockAt = s.stockAt || null; }
+        else { doc.stock = n; doc.stockAt = Date.now(); }
+      }
+      const photos = keepPhotos(fd).concat(await uploadFiles(fd.getAll('files')));
+      if (draft && draft.blob && S.assets) {
+        if (!draft.photo) { try { const r = await S.assets.upload(draft.blob); draft.photo = {id:r.id, type:r.contentType}; } catch(e) { toast(uploadMsg(e, 'Fotografije')); } }
+        if (draft.photo) photos.push(draft.photo);
+      }
+      doc.photos = photos;
+      const ok = await w(() => col('schedules').doc(s ? s.id : rid()).set(doc));
+      if (ok && draft && S.medQueue && S.medQueue.length) {
+        const next = S.medQueue.shift();
+        if (draft.photo) next.photo = draft.photo;
+        setTimeout(() => schedForm(null, next), 60);
+      }
+      return ok;
+    }, s ? delBtn('del-sched', s.id) : '');
+}
+
+function keepPhotos(fd){ return fd.getAll('keep').map(x => { try { return JSON.parse(x); } catch(e) { return null; } }).filter(Boolean); }
+function photoField(existing){
+  const ex = (existing || []).map(p => `<div class="ph">${p.type === 'application/pdf' ? '<span class="pdf">PDF</span>' : `<img src="/_blob/${encodeURIComponent(p.id)}" alt="">`}<input type="hidden" name="keep" value="${esc(JSON.stringify(p))}"><button type="button" class="x" data-act="rm-photo" aria-label="Odstrani prilogo">${I.x}</button></div>`).join('');
+  if (!S.assets) return `<div class="field"><span class="lbl">Fotografije</span>${ex ? `<div class="ph-list">${ex}</div>` : ''}<small>${S.mode === 'local' ? 'Fotografije lahko dodajaš na objavljeni strani.' : 'Dodajanje fotografij v tem pogledu ni na voljo.'}</small></div>`;
+  return `<div class="field"><label class="lbl" for="f-files">Fotografija izvida ali knjižice</label>${ex ? `<div class="ph-list">${ex}</div>` : ''}<input id="f-files" type="file" name="files" accept="image/jpeg,image/png,image/webp,image/gif,application/pdf" multiple><small>JPG, PNG ali PDF, do 20 MB.</small></div>`;
+}
+function uploadMsg(e, what){
+  const c = e && e.code;
+  return c === 'too_large' ? `${what} je prevelika (do 20 MB).` : c === 'unsupported_type' ? 'Uporabi JPG, PNG ali PDF.' : c === 'quota_or_state' ? 'Prostor za fotografije je poln.' : c === 'rate_limited' ? 'Preveč nalaganj naenkrat. Poskusi čez minuto.' : `${what} ni bilo mogoče naložiti.`;
+}
+async function shrink(file, max, q){
+  try {
+    const isImg = /^image\/(jpeg|png|webp|heic|heif)$/i.test(file.type || '') || /\.(jpe?g|png|webp|heic|heif)$/i.test(file.name || '');
+    if (!isImg) return file;
+    const bmp = await createImageBitmap(file, {imageOrientation:'from-image'});
+    const sc = Math.min(1, max / Math.max(bmp.width, bmp.height));
+    if (sc === 1 && file.size < 1.5e6 && /jpeg|png|webp/i.test(file.type || '')) { if (bmp.close) bmp.close(); return file; }
+    const c = document.createElement('canvas');
+    c.width = Math.max(1, Math.round(bmp.width * sc)); c.height = Math.max(1, Math.round(bmp.height * sc));
+    c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+    if (bmp.close) bmp.close();
+    const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', q || 0.86));
+    return blob || file;
+  } catch(e) { return file; }
+}
+async function uploadFiles(files){
+  const out = [];
+  if (!S.assets) return out;
+  for (const f of files) {
+    if (!f || !f.size) continue;
+    let type = f.type;
+    if (!type && /\.pdf$/i.test(f.name || '')) type = 'application/pdf';
+    try {
+      const body = type === 'application/pdf' ? f : await shrink(f, 2000, 0.86);
+      const r = await S.assets.upload(body, body === f && type && type !== f.type ? {type} : undefined);
+      out.push({id:r.id, type:r.contentType});
+    } catch(e) { toast(uploadMsg(e, f.name || 'Datoteke')); }
+  }
+  return out;
+}
+async function makePetPhoto(file){
+  if (S.assets) { const b = await shrink(file, 900, 0.86); const r = await S.assets.upload(b); return {id:r.id, type:r.contentType}; }
+  if (S.mode === 'local') {
+    const b = await shrink(file, 360, 0.8);
+    const data = await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(b); });
+    return {data, type:'image/jpeg'};
+  }
+  return null;
+}
+async function handlePetPhoto(file){
+  const p = pet(); if (!p || !file) return;
+  const el = $('#top'); if (el) el.classList.add('busy');
+  try {
+    const ph = await makePetPhoto(file);
+    if (!ph) { toast('Slike tu ni mogoče shraniti.'); return; }
+    if (await w(() => col('pets').doc(p.id).update({photo:ph}))) toast('Slika je shranjena.');
+  } catch(e) { toast(uploadMsg(e, 'Slike')); }
+  finally { const el2 = $('#top'); if (el2) el2.classList.remove('busy'); }
+}
+
+/* ---------- Branje ovojnice in knjižice s fotografije ---------- */
+const MED_PROMPT = `The image is a photo of a veterinary medicine for a dog or cat: a pill envelope, box, bottle or label. Text is usually Slovenian and often handwritten by the vet.
+Extract every medicine you can see. Reply with only this JSON, no other text:
+{"readable": true, "medicines": [{"name": "", "dose": "", "timesPerDay": null, "times": [], "durationDays": null, "quantity": null, "unit": "", "instructions": "", "uncertain": []}]}
+Field rules:
+- name: product name as written, with strength if shown (e.g. "Amoksiklav 250 mg").
+- dose: amount for ONE dose, in Slovenian as written (e.g. "1 tableta", "½ tablete", "2 ml"). Empty string if not written.
+- timesPerDay: integer from phrases like "2x dnevno", "1x na dan", "zjutraj in zvečer" (2), "na 12 ur" (2), "na 8 ur" (3). null if not stated.
+- times: only clock times literally written, as "HH:MM"; otherwise [].
+- durationDays: integer from "7 dni", "1 teden" (7), "10 dni"; null if not stated or "do nadaljnjega".
+- quantity: number of tablets or units in the package if written or clearly visible; else null.
+- unit: Slovenian unit for quantity in genitive plural, e.g. "tablet", "kapsul", "ml".
+- instructions: other notes in Slovenian, e.g. "po jedi", "z obrokom". Empty string if none.
+- uncertain: names of fields you could not read confidently (e.g. ["dose","timesPerDay"]).
+Never invent a dose or frequency that is not written: leave it empty or null and list it in uncertain.
+If the photo shows no medicine information, reply {"readable": false, "medicines": []}.`;
+const BOOK_PROMPT = `The image is a photo of a page from a dog's or cat's vaccination booklet or pet passport (often Slovenian or EU format). Entries are often handwritten, with vaccine stickers.
+Extract every vaccination, deworming or parasite treatment, and vet check you can read. Reply with only this JSON, no other text:
+{"readable": true, "entries": [{"kind": "cepljenje", "title": "", "date": "YYYY-MM-DD", "nextDue": null, "batch": "", "uncertain": []}]}
+Field rules:
+- kind: "cepljenje" for vaccines, "zajedavci" for deworming, tick or flea treatment, "pregled" for checkups.
+- title: short Slovenian name: "Steklina" for rabies, "Kombinirano cepivo (DHPPi)" for distemper or parvo combinations, "Leptospiroza", "Kužni kašelj", "Notranji zajedavci", "Klopi in bolhe"; otherwise the product name.
+- date: the date the entry was given, converted to YYYY-MM-DD; null if unreadable.
+- nextDue: the "valid until" or next date if written, as YYYY-MM-DD; otherwise null. Never guess an interval.
+- batch: vaccine product and batch number from the sticker if readable; else "".
+- uncertain: names of fields you could not read confidently.
+If the photo shows no such records, reply {"readable": false, "entries": []}.`;
+function parsePer(d){
+  const s = String(d || '').trim().replace(',', '.');
+  if (/^½/.test(s)) return 0.5;
+  if (/^¼/.test(s)) return 0.25;
+  let m = s.match(/^(\d+)\s*\/\s*(\d+)/); if (m && Number(m[2])) return Number(m[1]) / Number(m[2]);
+  m = s.match(/^(\d+(?:\.\d+)?)/); return m ? Number(m[1]) : 1;
+}
+function medDraft(m, blob, url, i, n){
+  const un = new Set(Array.isArray(m.uncertain) ? m.uncertain.map(String) : []);
+  const tpd = Math.round(Number(m.timesPerDay) || 0);
+  let times = Array.isArray(m.times) ? m.times.map(String).filter(t => /^\d{1,2}:\d{2}$/.test(t)).map(t => t.padStart(5,'0')) : [];
+  if (!times.length) {
+    times = ({1:['08:00'], 2:['08:00','20:00'], 3:['07:00','14:00','21:00'], 4:['07:00','12:00','17:00','22:00']})[tpd] || ['08:00'];
+    if (!tpd || tpd > 4) un.add('times');
+  }
+  const name = String(m.name || '').trim(), dose = String(m.dose || '').trim();
+  if (!name) un.add('name');
+  if (!dose) un.add('dose');
+  const days = Math.round(Number(m.durationDays) || 0), start = today();
+  const qty = Number(m.quantity);
+  return {
+    prefill:{kind:'zdravilo', name, dose, times, startDate:start, endDate: days > 0 ? ymd(addDays(parseYmd(start), days - 1)) : '', note:String(m.instructions || '').trim(), stock: qty > 0 ? qty : null, unit: String(m.unit || '').trim() || 'tablet', perDose: parsePer(dose)},
+    unsure:un, blob, url, i, n
+  };
+}
+function readingHtml(title, url, body){
+  return `<div class="sheet-in"><div class="sheet-head"><h2>${esc(title)}</h2><button type="button" class="x" data-act="close" aria-label="Zapri">${I.x}</button></div><img class="read-preview" src="${esc(url)}" alt="Fotografija">${body}</div>`;
+}
+function readFail(kind, url, blob, msg){
+  S.lastScan = {blob, url};
+  const book = kind === 'book';
+  sheet.innerHTML = readingHtml(book ? 'Knjižica' : 'Ovojnica', url, `<p class="info">${esc(msg)}</p><div class="sheet-foot"><span class="sp"></span><button type="button" class="btn" data-act="${book ? 'scan-book' : 'scan-med'}">${I.cam}Druga fotografija</button><button type="button" class="btn btn-primary" data-act="${book ? 'manual-book' : 'manual-med'}">Vpiši ročno</button></div>`);
+  if (!sheet.open) sheet.showModal();
+}
+async function readPhoto(kind, file){
+  if (!S.sample) return null;
+  const blob = await shrink(file, 1600, 0.88);
+  const url = URL.createObjectURL(blob);
+  const ctl = new AbortController();
+  S.readCtl = ctl; S.medQueue = null;
+  sheet.innerHTML = readingHtml(kind === 'book' ? 'Knjižica' : 'Ovojnica', url, `<p class="reading"><span class="spin" aria-hidden="true"></span><span>Berem besedilo na fotografiji. To lahko traja do pol minute.</span></p><div class="sheet-foot"><span class="sp"></span><button type="button" class="btn" data-act="close">Prekliči</button></div>`);
+  if (!sheet.open) sheet.showModal();
+  try {
+    const res = await S.sample.json(kind === 'book' ? BOOK_PROMPT : MED_PROMPT, {images:[blob], modelTier:'default', signal:ctl.signal});
+    if (S.readCtl !== ctl) return null;
+    S.readCtl = null;
+    return { res, blob, url };
+  } catch(e) {
+    if (S.readCtl === ctl) S.readCtl = null;
+    const c = e && e.code;
+    if (c === 'cancelled') return null;
+    if (['not_granted','sampling_disabled','not_declared','capability_disabled','capability_removed','images_unavailable'].includes(c)) {
+      S.sampleImg = false; S.obKey = null;
+      readFail(kind, url, blob, 'Branje fotografij tu ni na voljo. Vpiši ročno.');
+    } else if (c === 'rate_limited') readFail(kind, url, blob, 'Preveč zahtev naenkrat. Poskusi čez nekaj minut ali vpiši ročno.');
+    else if (c === 'image_rejected') readFail(kind, url, blob, 'Te fotografije ni bilo mogoče odpreti. Poskusi z drugo, posneto od blizu.');
+    else if (c === 'session_expired') readFail(kind, url, blob, 'Prijava je potekla. Osveži stran in poskusi znova.');
+    else readFail(kind, url, blob, 'Branje ni uspelo. Poskusi z drugo fotografijo ali vpiši ročno.');
+    return null;
+  }
+}
+async function readMed(file){
+  const r = await readPhoto('med', file); if (!r) return;
+  const meds = (r.res && Array.isArray(r.res.medicines)) ? r.res.medicines.filter(m => m && (m.name || m.dose)) : [];
+  if (!meds.length) { readFail('med', r.url, r.blob, 'Na fotografiji nisem našel podatkov o zdravilu. Poskusi od bližje, da bo besedilo ostro.'); return; }
+  const drafts = meds.map((m, i) => medDraft(m, r.blob, r.url, i, meds.length));
+  S.medQueue = drafts.slice(1);
+  schedForm(null, drafts[0]);
+}
+async function readBook(file){
+  const r = await readPhoto('book', file); if (!r) return;
+  const raw = (r.res && Array.isArray(r.res.entries)) ? r.res.entries : [];
+  const entries = raw.map(e => {
+    const kind = ['cepljenje','zajedavci','pregled'].includes(e && e.kind) ? e.kind : 'drugo';
+    const date = isYmd(e && e.date) ? e.date : null;
+    let next = isYmd(e && e.nextDue) ? e.nextDue : null;
+    if (next && date && next <= date) next = null;
+    const un = Array.isArray(e && e.uncertain) ? e.uncertain.map(String) : [];
+    return { kind, title: String((e && e.title) || '').trim() || KINDS[kind].l, date, nextDue: next, batch: String((e && e.batch) || '').trim(), unsure: un.length > 0 || (date && date > today()) };
+  }).filter(e => e.title);
+  if (!entries.length) { readFail('book', r.url, r.blob, 'Na fotografiji nisem našel cepljenj ali tretmajev. Poskusi od bližje, da bo besedilo ostro.'); return; }
+  bookReview(entries, r.blob, r.url);
+}
+function bookReview(entries, blob, url){
+  const rows = entries.map((e, i) => `<label class="bk"><input type="checkbox" name="pick" value="${i}" ${e.date ? 'checked' : 'disabled'}><span class="rmain"><span class="n">${esc(e.title)}</span><span class="sub">${KINDS[e.kind].l} · ${e.date ? fmtFull(e.date) : 'ni datuma'}${e.nextDue ? ` · naslednji ${fmtFull(e.nextDue)}` : ''}</span></span>${e.unsure ? '<span class="pill warn">preveri</span>' : ''}</label>`).join('');
+  openSheet('Prebrano iz knjižice', `<div class="draft"><img src="${esc(url)}" alt=""><div><p><b>Našel sem ${entries.length} ${entries.length === 1 ? 'vpis' : entries.length === 2 ? 'vpisa' : entries.length < 5 ? 'vpise' : 'vpisov'}.</b> Odkljukaj tiste, ki jih dodam. Datume primerjaj s knjižico.</p></div></div><div class="bk-list">${rows}</div>`,
+    'Dodaj izbrane', async fd => {
+      const picks = fd.getAll('pick').map(Number).filter(i => entries[i] && entries[i].date);
+      if (!picks.length) { toast('Izberi vsaj en vpis.'); return false; }
+      let photo = null;
+      if (S.assets) { try { const r = await S.assets.upload(blob); photo = {id:r.id, type:r.contentType}; } catch(e) { toast(uploadMsg(e, 'Fotografije')); } }
+      for (const i of picks) {
+        const e = entries[i];
+        const ok = await w(() => col('events').doc(rid()).set({ petId:S.petId, kind:e.kind, title:e.title, date:e.date, nextDue:e.nextDue, batch: e.kind === 'cepljenje' ? e.batch : '', note:'', photos: photo ? [photo] : [], by:S.me.id || null, createdAt:Date.now(), example:false }));
+        if (!ok) return false;
+      }
+      toast(`Dodano: ${picks.length}.`);
+      return true;
+    });
+}
+
+const presetOpts = k => (PRESETS[k] || []).map(x => `<option value="${esc(x)}"></option>`).join('');
+function eventForm(e, pre){
+  const v = e || Object.assign({kind:'cepljenje', date:today()}, pre || {});
+  const kinds = ['cepljenje','pregled','zajedavci','drugo'];
+  const f = openSheet(e ? 'Uredi vpis' : 'Nov vpis', `
+    <div class="field"><label class="lbl" for="e-kind">Vrsta</label><select id="e-kind" name="kind">${kinds.map(k => `<option value="${k}" ${v.kind === k ? 'selected' : ''}>${KINDS[k].l}</option>`).join('')}</select></div>
+    <div class="field"><label class="lbl" for="e-title">Naziv</label><input id="e-title" name="title" list="e-presets" required autocomplete="off" value="${esc(v.title)}" placeholder="npr. Steklina"><datalist id="e-presets">${presetOpts(v.kind)}</datalist></div>
+    <p class="info" id="e-rabies" ${/steklin/i.test(v.title || '') ? '' : 'hidden'}>Cepljenje psov proti steklini je v Sloveniji obvezno in rok je strog: zamujena ponovitev se šteje kot prvo cepljenje. Zato se opomnik pokaže že 30 dni prej.</p>
+    <div class="grid2"><div class="field"><label class="lbl" for="e-date">Datum</label><input id="e-date" type="date" name="date" required value="${esc(v.date)}"></div>
+    <div class="field"><label class="lbl" for="e-next">Naslednji rok</label><input id="e-next" type="date" name="nextDue" value="${esc(v.nextDue || '')}"></div></div>
+    <div class="qchips"><span class="hint">Rok čez:</span>${[['1m','1 mes.'],['3m','3 mes.'],['1y','1 leto'],['3y','3 leta'],['0','brez']].map(([k,l]) => `<button type="button" class="qchip" data-act="due" data-add="${k}">${l}</button>`).join('')}</div>
+    <div class="field" id="e-batchf" ${v.kind === 'cepljenje' ? '' : 'hidden'}><label class="lbl" for="e-batch">Cepivo in serija</label><input id="e-batch" name="batch" class="mono" value="${esc(v.batch)}" placeholder="z nalepke v knjižici"></div>
+    <div class="field"><label class="lbl" for="e-note">Opomba</label><textarea id="e-note" name="note" rows="2">${esc(v.note)}</textarea></div>
+    ${photoField(v.photos)}`,
+    'Shrani', async fd => {
+      const title = val(fd,'title'), date = val(fd,'date'), next = val(fd,'nextDue') || null;
+      if (!title) { toast('Vpiši naziv.'); return false; }
+      if (!date) { toast('Izberi datum.'); return false; }
+      if (next && next <= date) { toast('Naslednji rok mora biti za datumom vpisa.'); return false; }
+      const kind = kinds.includes(fd.get('kind')) ? fd.get('kind') : 'drugo';
+      const photos = keepPhotos(fd).concat(await uploadFiles(fd.getAll('files')));
+      const doc = {petId: e ? e.petId : S.petId, kind, title, date, nextDue:next, batch: kind === 'cepljenje' ? val(fd,'batch') : '', note:val(fd,'note'), photos, by: e ? (e.by || null) : (S.me.id || null), createdAt: e ? (e.createdAt || Date.now()) : Date.now(), example:false};
+      return w(() => col('events').doc(e ? e.id : rid()).set(doc));
+    }, e ? delBtn('del-event', e.id) : '');
+  f.addEventListener('input', ev => { if (ev.target.name === 'title') $('#e-rabies').hidden = !/steklin/i.test(ev.target.value); });
+  f.addEventListener('change', ev => { if (ev.target.name === 'kind') { $('#e-presets').innerHTML = presetOpts(ev.target.value); $('#e-batchf').hidden = ev.target.value !== 'cepljenje'; } });
+}
+
+function noteForm(e){
+  const v = e || {date:today(), time:hm(new Date()), tags:[]};
+  openSheet(e ? 'Uredi opažanje' : 'Opažanje', `
+    <fieldset><legend class="lbl">Kaj opažaš</legend><div class="chips">${TAGS.map((t,i) => `<label class="chip"><input type="checkbox" id="n-tag-${i}" name="tags" value="${esc(t)}" ${(v.tags || []).includes(t) ? 'checked' : ''}>${esc(t)}</label>`).join('')}</div></fieldset>
+    <div class="field"><label class="lbl" for="n-note">Opis</label><textarea id="n-note" name="note" rows="3" placeholder="npr. Dvakrat bruhanje po sprehodu, zvečer normalen apetit.">${esc(v.note)}</textarea></div>
+    <div class="grid2"><div class="field"><label class="lbl" for="n-date">Datum</label><input id="n-date" type="date" name="date" value="${esc(v.date)}"></div>
+    <div class="field"><label class="lbl" for="n-time">Ura</label><input id="n-time" type="time" name="time" value="${esc(v.time || '')}"></div></div>
+    ${photoField(v.photos)}`,
+    'Shrani', async fd => {
+      const tags = fd.getAll('tags').map(String), note = val(fd,'note');
+      if (!tags.length && !note) { toast('Izberi oznako ali napiši opis.'); return false; }
+      const photos = keepPhotos(fd).concat(await uploadFiles(fd.getAll('files')));
+      const doc = {petId: e ? e.petId : S.petId, kind:'opazanje', title:'', tags, note, date: val(fd,'date') || today(), time: val(fd,'time') || null, photos, by: e ? (e.by || null) : (S.me.id || null), createdAt: e ? (e.createdAt || Date.now()) : Date.now(), example:false};
+      return w(() => col('events').doc(e ? e.id : rid()).set(doc));
+    }, (e && role() !== 'skrbnik') ? delBtn('del-event', e.id) : '');
+}
+
+function weightForm(e){
+  const v = e || {date:today()};
+  openSheet(e ? 'Uredi meritev' : 'Teža', `
+    <div class="grid2"><div class="field"><label class="lbl" for="w-kg">Teža v kg</label><input id="w-kg" name="kg" class="mono" inputmode="decimal" required value="${v.kg != null ? esc(num(v.kg,2)) : ''}" placeholder="npr. 15,4"></div>
+    <div class="field"><label class="lbl" for="w-date">Datum</label><input id="w-date" type="date" name="date" value="${esc(v.date)}"></div></div>`,
+    'Shrani', async fd => {
+      const kg = Number(val(fd,'kg').replace(',','.'));
+      if (!(kg > 0 && kg < 150)) { toast('Vpiši težo v kilogramih, npr. 15,4.'); return false; }
+      const doc = {petId: e ? e.petId : S.petId, kind:'teza', title:'Teža', kg, date: val(fd,'date') || today(), by: e ? (e.by || null) : (S.me.id || null), createdAt: e ? (e.createdAt || Date.now()) : Date.now(), example:false};
+      return w(() => col('events').doc(e ? e.id : rid()).set(doc));
+    }, e ? delBtn('del-event', e.id) : '');
+}
+
+function openPhoto(id){ openInfo('Fotografija', `<img class="lb" src="/_blob/${encodeURIComponent(id)}" alt="Priložena fotografija">`); }
+
+/* ---------- Klik ---------- */
+const byId = (arr, id) => arr.find(x => x.id === id);
+document.addEventListener('click', async ev => {
+  const t = ev.target.closest('[data-act]'); if (!t) return;
+  const a = t.dataset.act, id = t.dataset.id;
+  switch (a) {
+    case 'give': give(t.dataset.key); break;
+    case 'give-force': give(t.dataset.key, true); break;
+    case 'guard-cancel': S.confirm = null; render(); break;
+    case 'undo': undo(t.dataset.key); break;
+    case 'pet': closeSheet(); S.petId = id; LS.set('dano.pet', id); S.confirm = null; showDone = false; render(); break;
+    case 'pet-menu': petMenu(); break;
+    case 'toggle-done': showDone = !showDone; render(); break;
+    case 'filter': S.filter = t.dataset.f; render(); break;
+    case 'new-pet': closeSheet(); S.ob = newOb(true); window.scrollTo(0,0); render(); break;
+    case 'edit-pet': { const p = pet(); if (p) petForm(p); break; }
+    case 'new-sched': schedForm(null); break;
+    case 'edit-sched': { const s = byId(S.schedules, id); if (s) schedForm(s); break; }
+    case 'new-event': eventForm(null); break;
+    case 'new-note': noteForm(null); break;
+    case 'new-weight': weightForm(null); break;
+    case 'edit-event': { const e = byId(S.events, id); if (!e) break; if (e.kind === 'opazanje') noteForm(e); else if (e.kind === 'teza') weightForm(e); else eventForm(e); break; }
+    case 'done-rem': { const e = byId(S.events, id); if (e) eventForm(null, {kind:e.kind, title:e.title, date:today(), nextDue:nextFrom(e, today())}); break; }
+    case 'copy-card': { const p = pet(); if (p) copyText(emergencyText(p), 'Kartica je kopirana.', $('#etext')); break; }
+    case 'copy-phone': { const p = pet(); if (p && p.vetPhone) copyText(p.vetPhone, 'Številka je kopirana.'); break; }
+    case 'photo': openPhoto(id); break;
+    case 'close': closeSheet(); break;
+    case 'edit-photo': $('#photoPick').click(); break;
+    case 'scan-med': stopReading(); $('#medPick').click(); break;
+    case 'scan-book': stopReading(); $('#bookPick').click(); break;
+    case 'manual-med': { const ls = S.lastScan; S.medQueue = null; schedForm(null, ls ? {prefill:{kind:'zdravilo'}, unsure:new Set(), blob:ls.blob, url:ls.url, i:0, n:1, manual:true} : null); break; }
+    case 'manual-book': eventForm(null); break;
+    case 'add-time': { const rows = $('#trows'); const inputs = rows.querySelectorAll('input'); const lv = inputs.length ? inputs[inputs.length-1].value : '08:00'; const nh = (Number((lv || '08:00').split(':')[0]) + 12) % 24; rows.insertAdjacentHTML('beforeend', timeRow(`${pad(nh)}:00`)); break; }
+    case 'rm-time': { const rows = $('#trows'); if (rows && rows.children.length > 1) t.closest('.trow').remove(); else toast('Potrebna je vsaj ena ura.'); break; }
+    case 'dur': { const n = Number(t.dataset.n); const st = $('#s-start').value || today(); $('#s-end').value = n ? ymd(addDays(parseYmd(st), n-1)) : ''; break; }
+    case 'due': { const base = parseYmd($('#e-date').value || today()); const m = {'1m':1,'3m':3,'1y':12,'3y':36}[t.dataset.add]; $('#e-next').value = m ? ymd(addMonths(base, m)) : ''; break; }
+    case 'until': { const n = Number(t.dataset.n); $('#m-until').value = n ? ymd(addDays(new Date(), n - 1)) : ''; break; }
+    case 'rm-photo': t.closest('.ph').remove(); break;
+    case 'del-sched': if (armed(t)) { if (await w(() => col('schedules').doc(id).delete())) closeSheet(); } break;
+    case 'del-event': if (armed(t)) { if (await w(() => col('events').doc(id).delete())) closeSheet(); } break;
+    case 'del-pet': if (armed(t, 'Res izbrišem vse zapise?')) { closeSheet(); await deletePet(id); } break;
+    case 'clear-ex': if (armed(t, 'Res počistim?')) { t.disabled = true; await clearExamples(); } break;
+    // družina in povabila
+    case 'new-member': memberForm(canManage() ? 'druzina' : 'skrbnik'); break;
+    case 'hide-invite': LS.set('dano.invHide.' + S.petId, '1'); render(); break;
+    case 'copy-link': { const link = ARTIFACT_URL + '#povabilo-' + t.dataset.code; copyText(link, 'Povezava je kopirana.', $('#invLink')); break; }
+    case 'cancel-invite': if (armed(t, 'Res?')) await w(() => col('invites').doc(t.dataset.code).update({cancelled:true, cancelledAt:Date.now()})); break;
+    case 'preview-invite': closeSheet(); location.hash = 'povabilo-' + t.dataset.code; break;
+    case 'close-invite': S.declined = null; location.hash = 'pes'; break;
+    case 'accept-invite': acceptInvite(t.dataset.code, t); break;
+    case 'decline-invite': S.declined = t.dataset.code; render(); break;
+    case 'rm-member': if (armed(t, 'Res odstranim?')) await removeMember(id); break;
+    case 'preview-care': S.preview = true; window.scrollTo(0,0); render(); break;
+    case 'end-preview': S.preview = false; location.hash = 'pes'; render(); break;
+    // prvi zagon
+    case 'ob-species': S.ob.species = t.dataset.s; S.ob.step = 'b'; window.scrollTo(0,0); render(); break;
+    case 'ob-back': S.ob.step = S.ob.step === 'c' ? 'b' : 'a'; render(); break;
+    case 'ob-next': if (S.ob.name.trim()) { S.ob.step = 'c'; window.scrollTo(0,0); render(); } break;
+    case 'ob-cancel': S.ob = null; render(); break;
+    case 'ob-photo': $('#obPhoto').click(); break;
+    case 'ob-time': { const tm = t.dataset.t, o = S.ob; o.times = o.times.includes(tm) ? o.times.filter(x => x !== tm) : [...o.times, tm].sort(); render(); break; }
+    case 'ob-addtime-show': S.ob.addTime = true; render(); break;
+    case 'ob-addtime': { const v = $('#ob-newtime') && $('#ob-newtime').value; if (v) { S.ob.times = [...new Set([...S.ob.times, v])].sort(); S.ob.addTime = false; render(); } break; }
+    case 'ob-scan': S.ob.after = t.dataset.what; (t.dataset.what === 'knjizica' ? $('#bookPick') : $('#medPick')).click(); break;
+    case 'ob-finish': t.disabled = true; t.textContent = 'Shranjujem …'; if (!(await finishOnboarding()) && t.isConnected) { t.disabled = false; t.textContent = 'Končaj'; } break;
+    case 'ob-invite-help': openInfo('Imaš povabilo?', '<p style="margin:0">Povabilo odpreš s povezavo, ki ti jo je poslal lastnik. Ko jo odpreš, se pokaže, za koga skrbiš in kaj lahko narediš.</p><p class="help" style="margin:0">Če povezava ne deluje, prosi lastnika za novo.</p><div class="sheet-foot"><span class="sp"></span><button class="btn btn-primary" data-act="close">V redu</button></div>'); break;
+  }
+});
+document.addEventListener('input', ev => {
+  const t = ev.target; if (!S.ob) return;
+  const map = {'ob-name':'name','ob-birth':'birth','ob-kg':'kg','ob-breed':'breed','ob-amount':'amount'};
+  if (map[t.id]) { S.ob[map[t.id]] = t.value; if (t.id === 'ob-name') { const b = $('#ob-next'); if (b) b.disabled = !t.value.trim(); } }
+});
+document.addEventListener('keydown', ev => {
+  if (ev.key === 'Enter' && ev.target.id === 'ob-name' && S.ob && S.ob.name.trim()) { ev.preventDefault(); S.ob.step = 'c'; render(); }
+});
+$('#photoPick').addEventListener('change', ev => { const f = ev.target.files && ev.target.files[0]; ev.target.value = ''; if (f) handlePetPhoto(f); });
+$('#obPhoto').addEventListener('change', ev => { const f = ev.target.files && ev.target.files[0]; ev.target.value = ''; if (!f || !S.ob) return; if (S.ob.photoUrl) { try { URL.revokeObjectURL(S.ob.photoUrl); } catch(e){} } S.ob.photoFile = f; S.ob.photoUrl = URL.createObjectURL(f); render(); });
+async function afterPick(f, reader){
+  if (S.ob && S.ob.after) { S.ob.after = null; if (!(await finishOnboarding())) return; }
+  reader(f);
+}
+$('#medPick').addEventListener('change', ev => { const f = ev.target.files && ev.target.files[0]; ev.target.value = ''; if (f) afterPick(f, readMed); });
+$('#bookPick').addEventListener('change', ev => { const f = ev.target.files && ev.target.files[0]; ev.target.value = ''; if (f) afterPick(f, readBook); });
+
+/* ---------- Zagon ---------- */
+async function resolveNames(){
+  if (!S.user) return;
+  const ids = peopleIds(); if (!ids.length) return;
+  let ps;
+  try { ps = await S.user.profiles(ids); } catch(e) { return; }
+  let changed = false;
+  for (const id of ids) {
+    const p = ps[id] || {}; const prev = S.names[id];
+    if (!prev || prev.name !== (p.name || '') || prev.avatar !== p.avatarUrl) { S.names[id] = {name:p.name || '', avatar:p.avatarUrl || ''}; changed = true; }
+  }
+  if (changed) render();
+}
+function afterData(){
+  if (allLoaded()) {
+    const pets = sortedPets();
+    if (!pets.find(p => p.id === S.petId)) S.petId = pets.length ? pets[0].id : null;
+    if (S.mode === 'db' && S.isOwner && S.me.id && S.canWrite && !myMember() && !S.ownerDocTried) {
+      S.ownerDocTried = true;
+      w(() => col('members').doc(S.me.id).set({ role:'lastnik', joinedAt:Date.now() }));
+    }
+    resolveNames();
+  }
+  render();
+}
+const use = n => (window.claude && typeof window.claude.use === 'function') ? window.claude.use(n).catch(() => null) : Promise.resolve(null);
+async function init(){
+  document.querySelectorAll('.ni[data-i]').forEach(el => { el.innerHTML = I[el.dataset.i] || ''; });
+  $('#careNote').innerHTML = I.note + 'Vpiši opažanje';
+  window.addEventListener('hashchange', () => { S.confirm = null; if (!inviteCode()) S.declined = null; render(); window.scrollTo(0,0); });
+  let rt;
+  window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if (view() === 'zdravje' && currentMode() === 'app') render(); }, 250); });
+  render();
+  const [db, user, assets, sample] = await Promise.all([use('db'), use('user'), use('assets'), use('sample')]);
+  S.user = user; S.assets = assets; S.sample = sample;
+  if (sample) {
+    try { const lim = await sample.limits(); S.sampleImg = !!(lim && lim.images); if (S.sampleImg && lim.images.mediaTypes) { const acc = lim.images.mediaTypes.join(','); $('#medPick').accept = acc; $('#bookPick').accept = acc; } } catch(e) { S.sampleImg = false; }
+  }
+  if (db) { S.mode = 'db'; S.store = db; } else { S.mode = 'local'; S.store = localStore(); }
+  if (user) {
+    try { const me = await user.me(); S.me = {id:me.id}; S.isOwner = !!me.isOwner; } catch(e) {}
+    try { if ((await user.can('data.write')) === false) S.canWrite = false; } catch(e) {}
+  }
+  if (S.mode === 'local') { S.me = {id:'local'}; S.isOwner = true; }
+  for (const c of COLS) {
+    S.store.collection(c).onSnapshot(
+      snap => { S[c] = snap.docs.map(d => Object.assign({id:d.id}, d.data())); S.loaded[c] = true; afterData(); },
+      err => { console.warn(c, err); if (err && err.code === 'revoked') S.canWrite = false; S.loaded[c] = true; render(); }
+    );
+  }
+  setInterval(() => { if (currentMode() !== 'onboard' && !sheet.open) render(); }, 60000);
+}
+init();
+})();
+</script>
