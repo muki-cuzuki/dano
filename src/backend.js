@@ -3,7 +3,7 @@ const CFG = window.DANO_CONFIG || {};
 const SB = (CFG.url && CFG.key && window.supabase) ? window.supabase.createClient(CFG.url, CFG.key, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } }) : null;
 const BUCKET = 'dano';
 const blobUrl = id => SB ? `${CFG.url}/storage/v1/object/public/${BUCKET}/${String(id).split('/').map(encodeURIComponent).join('/')}` : '';
-const AUTH = { session: null, view: 'login', busy: false, msg: '', email: '' };
+const AUTH = { session: null, view: 'welcome', busy: false, msg: '', email: '' };
 
 function sbErr(e){
   const m = (e && (e.message || e.error_description)) || String(e || '');
@@ -128,7 +128,7 @@ function signedOut(){
   if (S.store && S.store.close) S.store.close();
   S.store = null; S.assets = null; S.space = null; S.isOwner = false; S.me = { id: null };
   COLS.forEach(c => { S[c] = []; S.loaded[c] = false; });
-  AUTH.session = null; AUTH.view = 'login'; AUTH.busy = false; AUTH.msg = '';
+  AUTH.session = null; AUTH.view = 'welcome'; AUTH.busy = false; AUTH.msg = '';
   S.mode = 'auth'; render();
 }
 
@@ -144,7 +144,18 @@ function authMsg(e){
   return 'Ni uspelo. ' + m;
 }
 function authKey(){ return JSON.stringify([AUTH.view, AUTH.msg, AUTH.busy]); }
+function welcomeHtml(){
+  const inv = inviteCode() || LS.get('dano.pendingInvite');
+  const feats = [['bowl', 'Hrana in zdravila z uro', 'Odkljukaš, ko daš. Ni več dvojnih odmerkov.'], ['syringe', 'Cepljenja in zajedavci', 'Opomnik, preden rok poteče.'], ['user', 'Družina in skrbniki', 'Vsi vidijo isto, varuh samo, kar rabi.']];
+  return `<section class="ob welcome"><div class="ob-top">
+    <span class="logo-tile">${I.logo}</span>
+    <h1 class="wordmark">Dano</h1>
+    <p class="ob-sub">${inv ? 'Imaš povabilo. Ustvari račun ali se prijavi, nato ga sprejmeš.' : 'Hrana, zdravila in cepljenja na enem mestu. Vsi doma vidijo, kdo je kaj že dal.'}</p>
+    <div class="feats">${feats.map(([i, a, b]) => `<div class="feat"><span class="tile sm">${I[i]}</span><div><b>${a}</b><span>${b}</span></div></div>`).join('')}</div>
+  </div><div class="ob-bot"><button class="btn btn-primary btn-wide" data-act="auth-view" data-v="register">Ustvari račun</button><button class="btn btn-wide" data-act="auth-view" data-v="login">Prijava</button></div></section>`;
+}
 function authHtml(){
+  if (AUTH.view === 'welcome') return welcomeHtml();
   if (AUTH.view === 'check') return msgScreen('Preveri e-pošto', `Na ${esc(AUTH.email)} smo poslali povezavo za potrditev računa. Klikni jo, nato se tukaj prijavi.`, '<button class="btn btn-primary btn-wide" data-act="auth-view" data-v="login">Na prijavo</button>');
   if (AUTH.view === 'newpass') {
     return `<section class="ob"><div class="ob-top">${markHtml()}<h1 class="ob-title q">Novo geslo</h1>
@@ -154,7 +165,7 @@ function authHtml(){
   }
   const reg = AUTH.view === 'register';
   const inv = inviteCode() || LS.get('dano.pendingInvite');
-  return `<section class="ob"><div class="ob-top">${markHtml()}
+  return `<section class="ob"><div class="ob-top"><div class="obbar"><button class="back" data-act="auth-view" data-v="welcome">${I.back}Nazaj</button></div>${markHtml()}
     <h1 class="ob-title">${reg ? 'Nov račun' : 'Prijava'}</h1>
     <p class="ob-sub">${inv ? 'Imaš povabilo. Prijavi se ali ustvari račun, nato ga sprejmeš.' : reg ? 'Z računom vidiš iste zapise na vseh napravah in jih deliš z družino.' : 'Hrana, zdravila in cepljenja na enem mestu. Vsi doma vidijo, kdo je kaj že dal.'}</p>
     <form class="stack" id="authForm" novalidate>
@@ -164,7 +175,7 @@ function authHtml(){
       ${AUTH.msg ? `<p class="info" role="alert">${esc(AUTH.msg)}</p>` : ''}
       <button class="btn btn-primary btn-wide" type="submit" ${AUTH.busy ? 'disabled' : ''}>${AUTH.busy ? 'Počakaj …' : reg ? 'Ustvari račun' : 'Prijava'}</button>
     </form></div>
-    <div class="ob-bot">${reg ? '<button class="link" data-act="auth-view" data-v="login">Že imaš račun? Prijava</button>' : '<button class="btn btn-wide" data-act="auth-view" data-v="register">Ustvari račun</button><button class="link" data-act="auth-reset">Pozabljeno geslo</button>'}</div></section>`;
+    <div class="ob-bot">${reg ? '<button class="link" data-act="auth-view" data-v="login">Že imaš račun? Prijava</button>' : '<button class="link" data-act="auth-reset">Pozabljeno geslo</button><button class="link" data-act="auth-view" data-v="register">Še nimaš računa? Ustvari ga</button>'}</div></section>`;
 }
 async function authSubmit(f){
   const fd = new FormData(f);

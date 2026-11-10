@@ -30,8 +30,8 @@ head = f"""<!doctype html>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Dano</title>
 <meta name="description" content="Hrana, zdravila in cepljenja za psa ali mačko. Vsi doma vidijo, kdo je kaj že dal.">
-<meta name="theme-color" content="#F5F0E6" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#121815" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F0F0EF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0F1715" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">

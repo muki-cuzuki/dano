@@ -8,7 +8,7 @@ Testna aplikacija za skrb za psa ali mačko: hranjenje, zdravila z zalogo, ceplj
 - Gostovanje: Vercel, brez gradnje; vsaka sprememba na veji `main` se objavi sama.
 
 Datoteke:
-- `index.html` – celotna aplikacija (dizajn Dano 3 · Ovsena)
+- `index.html` – celotna aplikacija (dizajn Dano 3 · Smaragd)
 - `config.js` – naslov Supabase projekta in javni ključ
 - `sw.js`, `manifest.webmanifest`, `icons/` – namestitev na telefon
 - `src/` – izvorni deli, iz katerih je sestavljen `index.html` (`python3 src/build.py`)
