@@ -149,7 +149,7 @@ function welcomeHtml(){
   const feats = [['bowl', 'Hrana in zdravila z uro', 'Odkljukaš, ko daš. Ni več dvojnih odmerkov.'], ['syringe', 'Cepljenja in zajedavci', 'Opomnik, preden rok poteče.'], ['user', 'Družina in skrbniki', 'Vsi vidijo isto, varuh samo, kar rabi.']];
   return `<section class="ob welcome"><div class="ob-top">
     <span class="logo-tile">${I.logo}</span>
-    <h1 class="wordmark">Dano</h1>
+    <h1 class="wordmark">Pasji utrip</h1>
     <p class="ob-sub">${inv ? 'Imaš povabilo. Ustvari račun ali se prijavi, nato ga sprejmeš.' : 'Hrana, zdravila in cepljenja na enem mestu. Vsi doma vidijo, kdo je kaj že dal.'}</p>
     <div class="feats">${feats.map(([i, a, b]) => `<div class="feat"><span class="tile sm">${I[i]}</span><div><b>${a}</b><span>${b}</span></div></div>`).join('')}</div>
   </div><div class="ob-bot"><button class="btn btn-primary btn-wide" data-act="auth-view" data-v="register">Ustvari račun</button><button class="btn btn-wide" data-act="auth-view" data-v="login">Prijava</button></div></section>`;
@@ -253,7 +253,7 @@ function installCard(){
   if (standalone || LS.get('dano.installHide') || !SB) return '';
   const ios = /iPhone|iPad|iPod/.test(navigator.userAgent);
   const how = ios ? 'V Safariju tapni Deli in izberi Dodaj na začetni zaslon.' : 'V meniju brskalnika izberi Namesti aplikacijo ali Dodaj na začetni zaslon.';
-  return `<section class="sec"><div class="invite-card"><b>Dodaj Dano na začetni zaslon</b><p>${how} Potem se odpre čez cel zaslon, kot prava aplikacija.</p><div class="btns"><button class="link" data-act="hide-install">V redu</button></div></div></section>`;
+  return `<section class="sec"><div class="invite-card"><b>Dodaj Pasji utrip na začetni zaslon</b><p>${how} Potem se odpre čez cel zaslon, kot prava aplikacija.</p><div class="btns"><button class="link" data-act="hide-install">V redu</button></div></div></section>`;
 }
 
 async function resolveNames(){ /* imena so v zapisih članov */ }

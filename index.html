@@ -3,73 +3,77 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Dano</title>
+<title>Pasji utrip</title>
 <meta name="description" content="Hrana, zdravila in cepljenja za psa ali mačko. Vsi doma vidijo, kdo je kaj že dal.">
-<meta name="theme-color" content="#F0F0EF" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0F1715" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#ECEAE6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#151412" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Dano">
+<meta name="apple-mobile-web-app-title" content="Pasji utrip">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="preload" href="fonts/barlow-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/figtree-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <style>
-@font-face{font-family:'Barlow';font-style:normal;font-weight:400;font-display:swap;src:url(fonts/barlow-latin-ext-400-normal.woff2) format('woff2');unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
-@font-face{font-family:'Barlow';font-style:normal;font-weight:400;font-display:swap;src:url(fonts/barlow-latin-400-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
-@font-face{font-family:'Barlow';font-style:normal;font-weight:500;font-display:swap;src:url(fonts/barlow-latin-ext-500-normal.woff2) format('woff2');unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
-@font-face{font-family:'Barlow';font-style:normal;font-weight:500;font-display:swap;src:url(fonts/barlow-latin-500-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
-@font-face{font-family:'Barlow';font-style:normal;font-weight:600;font-display:swap;src:url(fonts/barlow-latin-ext-600-normal.woff2) format('woff2');unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
-@font-face{font-family:'Barlow';font-style:normal;font-weight:600;font-display:swap;src:url(fonts/barlow-latin-600-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
-@font-face{font-family:'Barlow';font-style:normal;font-weight:700;font-display:swap;src:url(fonts/barlow-latin-ext-700-normal.woff2) format('woff2');unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
-@font-face{font-family:'Barlow';font-style:normal;font-weight:700;font-display:swap;src:url(fonts/barlow-latin-700-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Figtree';font-style:normal;font-weight:400;font-display:swap;src:url(fonts/figtree-latin-ext-400-normal.woff2) format('woff2');unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Figtree';font-style:normal;font-weight:400;font-display:swap;src:url(fonts/figtree-latin-400-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Figtree';font-style:normal;font-weight:500;font-display:swap;src:url(fonts/figtree-latin-ext-500-normal.woff2) format('woff2');unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Figtree';font-style:normal;font-weight:500;font-display:swap;src:url(fonts/figtree-latin-500-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Figtree';font-style:normal;font-weight:600;font-display:swap;src:url(fonts/figtree-latin-ext-600-normal.woff2) format('woff2');unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Figtree';font-style:normal;font-weight:600;font-display:swap;src:url(fonts/figtree-latin-600-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Figtree';font-style:normal;font-weight:700;font-display:swap;src:url(fonts/figtree-latin-ext-700-normal.woff2) format('woff2');unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Figtree';font-style:normal;font-weight:700;font-display:swap;src:url(fonts/figtree-latin-700-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Bricolage Grotesque';font-style:normal;font-weight:600;font-display:swap;src:url(fonts/bricolage-grotesque-latin-ext-600-normal.woff2) format('woff2');unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Bricolage Grotesque';font-style:normal;font-weight:600;font-display:swap;src:url(fonts/bricolage-grotesque-latin-600-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Bricolage Grotesque';font-style:normal;font-weight:700;font-display:swap;src:url(fonts/bricolage-grotesque-latin-ext-700-normal.woff2) format('woff2');unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Bricolage Grotesque';font-style:normal;font-weight:700;font-display:swap;src:url(fonts/bricolage-grotesque-latin-700-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 :root{color-scheme:light;padding-top:env(safe-area-inset-top,0px)}
 img{max-width:100%}
 [hidden]{display:none!important}
 </style>
 <style>
-/* Layout: Dano 3 · Smaragd. Ena stolpčna mobilna aplikacija (max 640px): fotografija psa v glavi, peščena kartica »Zdaj na vrsti« kot edino glavno dejanje, pod njo seznam dneva; spodaj navigacija. 60 % svetlo siva, 30 % peščena in smaragdne ploščice, 10 % marelična za »ukrepaj zdaj«; zelena kljukica pomeni opravljeno. */
+/* Layout: Pasji utrip · D1 (kamen, oglje, terakota). Ena stolpčna mobilna aplikacija (max 640px): fotografija psa v glavi; »Naslednje« = temna kartica z edinim barvnim gumbom, pod njo naslednje zdravilo/obrok in veterinar; nato seznam dneva in napoved. Terakota pomeni samo »pritisni« ali »zamuja«; opravljeno je v barvi besedila. */
 :root{
-  --bg:#F0F0EF; --card:#FFFFFF; --ink:#123F36; --muted:#5B6662; --line:#E4E4E1; --edge:#CFCFCA;
-  --sage:#F5E2B8; --sage-soft:#FAF0DA;
-  --tile:#007961; --on-tile:#F5E2B8;
-  --accent:#E7944A; --on-accent:#123F36;
-  --hero:#F5E2B8; --on-hero:#123F36; --on-hero-muted:#4F5A50; --hero-btn:#E7944A; --hero-btn-ink:#123F36; --hero-ring:#F5E2B8;
-  --ok:#4DB57A; --ok-ink:#2B7A4B; --on-ok:#0F2E26;
-  --late:#E7944A; --late-ink:#A8551A; --late-soft:#FBE3CC; --late-bg:#FDF3EA; --on-late:#123F36;
-  --on-photo:#FFFFFF; --glass:rgba(255,255,255,.24); --shade:rgba(18,63,54,.78);
-  --scrim:rgba(10,24,20,.5);
-  --shadow:0 1px 2px rgba(18,63,54,.05),0 8px 24px rgba(18,63,54,.07);
-  --f:'Barlow','Helvetica Neue',Arial,system-ui,sans-serif;
-  --r-card:22px; --r-tile:16px; --r-field:14px;
+  --bg:#ECEAE6; --card:#FFFFFF; --ink:#22211F; --muted:#6A6862; --line:#E1DED9; --edge:#CBC7C0;
+  --sage:#DDD9D2; --sage-soft:#F6F4F0;
+  --tile:#E4E1DB; --on-tile:#22211F;
+  --accent:#C2582F; --on-accent:#FFFFFF;
+  --hero:#22211F; --on-hero:#FFFFFF; --on-hero-muted:#B5B2AA; --hero-btn:#C2582F; --hero-btn-ink:#FFFFFF; --hero-ring:#22211F;
+  --ok:#22211F; --ok-ink:#22211F; --on-ok:#FFFFFF;
+  --late:#C2582F; --late-ink:#A4441F; --late-soft:#F6DDD2; --late-bg:#FBF0EA; --on-late:#FFFFFF;
+  --on-photo:#FFFFFF; --glass:rgba(255,255,255,.24); --shade:rgba(34,33,31,.8);
+  --scrim:rgba(20,19,17,.5);
+  --shadow:0 1px 2px rgba(34,33,31,.04);
+  --f:'Figtree','Helvetica Neue',Arial,system-ui,sans-serif; --fh:'Bricolage Grotesque','Figtree','Helvetica Neue',Arial,system-ui,sans-serif;
+  --r-card:20px; --r-tile:16px; --r-field:14px;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#0F1715; --card:#17211E; --ink:#E8EDE9; --muted:#A2ADA7; --line:#24302C; --edge:#34423D;
-    --sage:#4A4130; --sage-soft:#221F18;
-    --tile:#1F8A72; --on-tile:#F5E2B8;
-    --accent:#E7944A; --on-accent:#1A1209;
-    --hero:#2B271E; --on-hero:#F3EBDD; --on-hero-muted:#BDB4A2; --hero-btn:#E7944A; --hero-btn-ink:#1A1209; --hero-ring:#2B271E;
-    --ok:#5CC48A; --ok-ink:#8FD9AE; --on-ok:#0F2E26;
-    --late:#EFA163; --late-ink:#F5B686; --late-soft:#3D2A1A; --late-bg:#2A1E14; --on-late:#1A1209;
-    --on-photo:#FFFFFF; --glass:rgba(255,255,255,.2); --shade:rgba(8,18,15,.8);
-    --scrim:rgba(0,0,0,.6);
-    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
-    color-scheme:dark;
+  --bg:#151412; --card:#1F1E1B; --ink:#F1EFEA; --muted:#A5A29A; --line:#2C2A27; --edge:#3D3A36;
+  --sage:#33312D; --sage-soft:#262522;
+  --tile:#2C2A27; --on-tile:#F1EFEA;
+  --accent:#D9703F; --on-accent:#1A0E08;
+  --hero:#34322E; --on-hero:#FFFFFF; --on-hero-muted:#BDB9B0; --hero-btn:#D9703F; --hero-btn-ink:#1A0E08; --hero-ring:#34322E;
+  --ok:#F1EFEA; --ok-ink:#F1EFEA; --on-ok:#151412;
+  --late:#D9703F; --late-ink:#F0A17A; --late-soft:#3D261B; --late-bg:#2A1C15; --on-late:#1A0E08;
+  --on-photo:#FFFFFF; --glass:rgba(255,255,255,.2); --shade:rgba(0,0,0,.78);
+  --scrim:rgba(0,0,0,.6);
+  --shadow:0 1px 2px rgba(0,0,0,.3);
+  color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#0F1715; --card:#17211E; --ink:#E8EDE9; --muted:#A2ADA7; --line:#24302C; --edge:#34423D;
-  --sage:#4A4130; --sage-soft:#221F18;
-  --tile:#1F8A72; --on-tile:#F5E2B8;
-  --accent:#E7944A; --on-accent:#1A1209;
-  --hero:#2B271E; --on-hero:#F3EBDD; --on-hero-muted:#BDB4A2; --hero-btn:#E7944A; --hero-btn-ink:#1A1209; --hero-ring:#2B271E;
-  --ok:#5CC48A; --ok-ink:#8FD9AE; --on-ok:#0F2E26;
-  --late:#EFA163; --late-ink:#F5B686; --late-soft:#3D2A1A; --late-bg:#2A1E14; --on-late:#1A1209;
-  --on-photo:#FFFFFF; --glass:rgba(255,255,255,.2); --shade:rgba(8,18,15,.8);
+  --bg:#151412; --card:#1F1E1B; --ink:#F1EFEA; --muted:#A5A29A; --line:#2C2A27; --edge:#3D3A36;
+  --sage:#33312D; --sage-soft:#262522;
+  --tile:#2C2A27; --on-tile:#F1EFEA;
+  --accent:#D9703F; --on-accent:#1A0E08;
+  --hero:#34322E; --on-hero:#FFFFFF; --on-hero-muted:#BDB9B0; --hero-btn:#D9703F; --hero-btn-ink:#1A0E08; --hero-ring:#34322E;
+  --ok:#F1EFEA; --ok-ink:#F1EFEA; --on-ok:#151412;
+  --late:#D9703F; --late-ink:#F0A17A; --late-soft:#3D261B; --late-bg:#2A1C15; --on-late:#1A0E08;
+  --on-photo:#FFFFFF; --glass:rgba(255,255,255,.2); --shade:rgba(0,0,0,.78);
   --scrim:rgba(0,0,0,.6);
-  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+  --shadow:0 1px 2px rgba(0,0,0,.3);
   color-scheme:dark;
 }
 *{box-sizing:border-box}
@@ -356,14 +360,76 @@ details.ended > summary{cursor:pointer;color:var(--muted);font-weight:600;paddin
 .hero{display:flex;align-items:flex-end;gap:16px}
 .hero > .htxt{flex:1;min-width:0;display:grid;gap:8px}
 
+/* D1: naslovi v Bricolage Grotesque */
+h2,.pet-name,.now-name,.ob-title,.wordmark,.card-head h3,.mark,.invite-card b,.choice b,.nx-name{font-family:var(--fh)}
+.eyebrow{font:700 12px/16px var(--f);letter-spacing:.08em}
+.btn-primary,.btn-sm.dark{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.fchip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--card)}
+.logo-tile,.mark .mini{color:#FFFFFF;background:var(--accent)}
+:root{--hero-ink:#22211F}
+.lab{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:24px 8px 10px}
+.lab b{font:700 14px/18px var(--f)}
+.lnk{border:0;background:none;padding:6px 0;color:var(--ink);font:600 14px/18px var(--f);text-decoration:underline;text-underline-offset:3px}
+.nxs{display:grid;gap:10px}
+.now{border-radius:var(--r-card);padding:16px 18px 18px;gap:0;margin-top:0}
+.now-top{min-height:26px}
+.nx-line{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:4px}
+.now-name{font:600 30px/34px var(--fh);letter-spacing:-.01em}
+.nx-when{font:700 18px/24px var(--f);white-space:nowrap}
+.now .now-sub{margin-top:2px;font-size:15px}
+.btn-hero{min-height:48px;border-radius:12px;font:700 17px/22px var(--f);margin-top:14px}
+.btn-hero svg{display:none}
+.now.is-done .now-name{font-size:24px;line-height:29px}
+.now.is-done{background:var(--card);color:var(--ink)}
+.now.is-guard p{margin:8px 0 14px}
+.pill{font-weight:700;padding:5px 10px}
+.pill.light{background:rgba(255,255,255,.16);color:var(--on-hero)}
+.nx{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--card);border-radius:var(--r-card);padding:14px 18px;min-width:0}
+.nx > div:first-child{min-width:0}
+.nx-name{font:600 22px/27px var(--fh);margin-top:3px;overflow-wrap:anywhere}
+.nx-r{display:grid;justify-items:end;gap:4px;text-align:right;flex-shrink:0}
+.nx-r b{font:700 18px/22px var(--f)}
+.nx-r span{font-size:14px;line-height:18px;color:var(--muted)}
+.nx-r .is-late{color:var(--late-ink);font-weight:700}
+.wordmark{font-size:clamp(44px,13.5vw,60px);line-height:1.02}
+.nx.none .nx-name{font:500 16px/22px var(--f);color:var(--muted)}
+.day{list-style:none;margin:0;padding:0;background:var(--card);border-radius:var(--r-card);overflow:hidden}
+.dy{display:grid;grid-template-columns:44px minmax(0,1fr) auto;align-items:center;gap:0 6px;padding:5px 16px 5px 8px;border-top:1px solid var(--line);min-height:56px}
+.dy:first-child{border-top:0}
+.dy .n{font:600 17px/22px var(--f)}
+.dy .sub{font-size:13px;line-height:17px}
+.dy-r{display:grid;justify-items:end;gap:1px;font-size:14px;line-height:18px;color:var(--muted);text-align:right}
+.dy .undo{font-size:13px;padding:0}
+.tick{width:44px;height:44px;border:0;background:none;padding:0;display:grid;place-items:center;border-radius:50%}
+.tick i{width:26px;height:26px;border-radius:50%;box-shadow:inset 0 0 0 2px var(--edge);display:grid;place-items:center}
+.dy.is-late .tick i{box-shadow:inset 0 0 0 2.5px var(--late)}
+.dy.is-due .tick i{box-shadow:inset 0 0 0 2.5px var(--ink)}
+.dy.is-given .tick i{background:var(--ok);color:var(--on-ok);box-shadow:none}
+.tick svg{width:15px;height:15px;stroke-width:2.6}
+.tick.pop i{animation:checkIn .32s cubic-bezier(.2,1.5,.4,1)}
+button.tick:active i{transform:scale(.9)}
+.dy .guard,.dy .note{grid-column:1/-1;margin:4px 0 8px 8px}
+.fc .row{padding:13px 18px}
+.fc .rside{align-items:flex-end;gap:2px}
+.fc .rside b{font:700 17px/22px var(--f);white-space:nowrap}
+.fc .rside b.is-late{color:var(--late-ink)}
+.fc .lnk{padding:2px 0;font-size:13px;color:var(--muted)}
+.pv{border:1.5px dashed var(--edge);border-radius:16px;background:var(--bg);display:grid}
+.pv .row{padding:11px 14px}
+.pv p{margin:0;padding:12px 14px;color:var(--muted);font-size:14px}
+.setrow{display:grid;gap:8px;padding-block:12px;border-top:1px solid var(--line)}
+.setrow:first-of-type{border-top:0;padding-top:0}
+.setrow b{font:600 16px/21px var(--f);display:block}
+.setrow small{font-size:13px;color:var(--muted)}
+
 /* Navigacija */
 .nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);z-index:20}
 .nav .wrap{display:grid;grid-template-columns:repeat(4,1fr)}
-.nav a{display:flex;flex-direction:column;align-items:center;gap:4px;padding-block:9px 10px;color:var(--muted);text-decoration:none;font:500 12px/14px var(--f)}
-.nav .ni{width:62px;height:32px;border-radius:999px;display:grid;place-items:center}
-.nav svg{width:22px;height:22px}
+.nav a{display:flex;justify-content:center;padding-block:18px 20px;color:var(--muted);text-decoration:none;font:500 16px/20px var(--f)}
+.nav .ni{display:none}
+.nav a span:last-child{padding-bottom:5px;border-bottom:3px solid transparent}
 .nav a[aria-current="page"]{color:var(--ink);font-weight:700}
-.nav a[aria-current="page"] .ni{background:var(--sage)}
+.nav a[aria-current="page"] span:last-child{border-bottom-color:var(--ink)}
 #toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(88px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--card);padding:12px 16px;border-radius:16px;font:500 15px/20px var(--f);width:max-content;max-width:calc(100% - 32px);z-index:40;box-shadow:var(--shadow);display:flex;align-items:center;gap:14px}
 #toast[hidden]{display:none}
 #toast button{border:0;background:none;color:var(--card);font:700 15px/20px var(--f);padding:2px 0;display:inline-flex;align-items:center;gap:6px;text-decoration:underline;text-underline-offset:3px}
@@ -391,10 +457,10 @@ textarea{resize:vertical}
 @media (max-width:380px){.grid3{grid-template-columns:1fr 1fr}}
 fieldset{border:0;margin:0;padding:0;min-width:0}
 legend{padding:0;margin-bottom:6px}
-.seg{display:flex;border-radius:var(--r-field);padding:4px;background:var(--bg);box-shadow:inset 0 0 0 1.5px var(--edge)}
-.seg label{flex:1;text-align:center;padding:9px;border-radius:11px;font-weight:600;cursor:pointer;position:relative;color:var(--muted)}
+.seg{display:flex;border-radius:var(--r-field);padding:3px;background:var(--bg)}
+.seg label{flex:1;text-align:center;padding:9px 4px;border-radius:11px;font-weight:600;cursor:pointer;position:relative;color:var(--ink);white-space:nowrap}
 .seg input,.chip input{position:absolute;opacity:0;pointer-events:none}
-.seg label:has(input:checked){background:var(--card);box-shadow:var(--shadow);color:var(--ink)}
+.seg label:has(input:checked){background:var(--ink);color:var(--card)}
 .seg label:has(input:focus-visible),.chip:has(input:focus-visible){outline:2px solid var(--ink)}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{position:relative;border:1.5px solid var(--edge);border-radius:999px;padding:8px 14px;font-weight:600;cursor:pointer;background:var(--card)}
@@ -788,7 +854,7 @@ function render(){
   S.justGiven = null;
 }
 
-function markHtml(){ return `<span class="mark"><span class="mini">${I.logo}</span>Dano</span>`; }
+function markHtml(){ return `<span class="mark"><span class="mini">${I.logo}</span>Pasji utrip</span>`; }
 function renderHeader(v, m){
   const p = pet(), pets = sortedPets(), top = $('#top');
   if (!p) { top.innerHTML = ''; top.dataset.k = ''; return; }
@@ -851,47 +917,80 @@ function othersHtml(){
   const who = names.length === others.length ? listJoin(names) : (others.length === 1 ? 'drugi' : 'ostali doma');
   return `<div class="now-who"><span class="avs">${others.slice(0,3).map(r => avatarHtml(r.id, nameOf(r.id), r.m && r.m.role === 'skrbnik' ? 'care' : '')).join('')}</span><span>Ko označiš, ${esc(who)} takoj ${verb}, kdo in kdaj.</span></div>`;
 }
+function relWhen(dt, now){
+  const mins = Math.round((dt - now) / 60000);
+  const day = ymd(dt) === ymd(now) ? 'danes' : ymd(dt) === ymd(addDays(now, 1)) ? 'jutri' : fmtNum(ymd(dt));
+  return {when: `${day} ${hm(dt)}`, rel: mins < -30 ? `zamuja ${dur(-mins)}` : mins <= 0 ? 'zdaj' : mins < 24*60 ? `čez ${dur(mins)}` : '', late: mins < -30};
+}
+function nextOfKind(kind, skipKey, now){
+  const isKind = s => (s.kind === 'zdravilo') === (kind === 'zdravilo');
+  const t = slotsFor(today()).filter(x => isKind(x.s) && x.key !== skipKey && status(x, now) !== 'given');
+  if (t.length) return t[0];
+  const tm = slotsFor(ymd(addDays(now, 1))).filter(x => isKind(x.s) && x.key !== skipKey);
+  return tm[0] || null;
+}
+function fmtDay(s){ const d = parseYmd(s); return `${DAY_L[d.getDay()].slice(0,3)}, ${d.getDate()}. ${MON_S[d.getMonth()]}`; }
 function nowCard(slots, st, now){
   const i = nextIdx(st);
   if (i < 0) {
     const tm = tomorrowFirst();
-    return `<div class="now is-done"><div class="now-top"><span class="eyebrow">Danes</span><span class="pill ok">${slots.length} od ${slots.length}</span></div><div class="now-main"><span class="tile lg">${I.check}</span><div><h2 class="now-name" style="font-size:clamp(26px,8vw,32px)">Vse za danes je opravljeno.</h2>${tm ? `<div class="now-sub">Jutri ob ${esc(tm.time)}: ${esc(tm.s.name)}</div>` : ''}</div></div></div>`;
+    return `<div class="now is-done"><div class="now-top"><span class="eyebrow">Danes</span><span class="pill ok">${slots.length} od ${slots.length}</span></div><h2 class="now-name">Vse za danes je opravljeno.</h2>${tm ? `<div class="now-sub">Jutri ob ${esc(tm.time)}: ${esc(tm.s.name)}</div>` : ''}</div>`;
   }
   const sl = slots[i], s = sl.s, stt = st[i];
   if (S.confirm && S.confirm.key === sl.key) {
-    return `<div class="now is-guard" role="alert"><div class="now-top"><span class="eyebrow">Preveri, preden označiš</span><span class="tile sm warn">${I.alert}</span></div><p>${esc(S.confirm.msg)}</p><div class="btns"><button class="btn btn-primary" data-act="give-force" data-key="${esc(sl.key)}">Vseeno označi</button><button class="btn" data-act="guard-cancel">Prekliči</button></div></div>`;
+    return `<div class="now is-guard" role="alert"><div class="now-top"><span class="eyebrow">Preveri, preden označiš</span></div><p>${esc(S.confirm.msg)}</p><div class="btns"><button class="btn btn-primary" data-act="give-force" data-key="${esc(sl.key)}">Vseeno označi</button><button class="btn" data-act="guard-cancel">Prekliči</button></div></div>`;
   }
   const mins = Math.round((now - sl.dt) / 60000);
-  const eyebrow = (stt === 'late' || stt === 'due') ? 'Zdaj na vrsti' : 'Naslednje';
-  const pill = stt === 'late' ? `<span class="pill late">${I.bell}Zamuja ${dur(mins)}</span>`
-    : (stt === 'due' && mins < 0) ? `<span class="pill light">Čez ${dur(-mins)}</span>`
-    : stt === 'due' ? '<span class="pill light">Zdaj</span>'
-    : `<span class="pill light">Ob ${esc(sl.time)}</span>`;
-  const btn = S.canWrite ? `<button class="btn-hero" data-act="give" data-key="${esc(sl.key)}">${I.check}${esc(giveLabel(s))}</button>` : '';
-  return `<div class="now"><div class="now-top"><span class="eyebrow">${eyebrow}</span>${pill}</div><div class="now-main"><span class="tile lg">${kindIcon(s)}</span><div><h2 class="now-name">${esc(s.name)}</h2><div class="now-sub">${esc([sl.time, s.dose].filter(Boolean).join(' · '))}</div></div></div>${othersHtml()}${btn}</div>`;
+  const pill = stt === 'late' ? `<span class="pill late">zamuja ${dur(mins)}</span>`
+    : (stt === 'due' && mins < 0) ? `<span class="pill light">čez ${dur(-mins)}</span>`
+    : stt === 'due' ? '<span class="pill light">zdaj</span>'
+    : `<span class="pill light">čez ${dur(-mins)}</span>`;
+  const btn = S.canWrite ? `<button class="btn-hero" data-act="give" data-key="${esc(sl.key)}">${esc(giveLabel(s))}</button>` : '';
+  return `<div class="now"><div class="now-top"><span class="eyebrow">${s.kind === 'zdravilo' ? 'Zdravilo' : 'Obrok'}</span>${pill}</div><div class="nx-line"><h2 class="now-name">${esc(s.name)}</h2><b class="nx-when">danes ${esc(sl.time)}</b></div>${s.dose ? `<div class="now-sub">${esc(s.dose)}</div>` : ''}${btn}</div>`;
+}
+function nxRow(label, name, when, rel, late){
+  return `<div class="nx"><div><span class="eyebrow">${label}</span><div class="nx-name">${esc(name)}</div></div><div class="nx-r"><b>${esc(when)}</b>${rel ? `<span${late ? ' class="is-late"' : ''}>${esc(rel)}</span>` : ''}</div></div>`;
+}
+function vetRow(){
+  const r = reminders().filter(x => x.e.kind === 'pregled')[0];
+  if (r) return nxRow('Veterinar', r.e.title, fmtDay(r.e.nextDue), r.label.toLowerCase(), r.days < 0);
+  if (!S.canWrite || role() === 'skrbnik') return '';
+  return `<div class="nx none"><div><span class="eyebrow">Veterinar</span><div class="nx-name">Naslednji obisk še ni vpisan.</div></div><button class="lnk" data-act="new-event">Vpiši</button></div>`;
+}
+function dyRow(sl, st, now){
+  const s = sl.s, given = st === 'given';
+  let right = '';
+  if (given) {
+    const d = sl.dose, by = who(d.by, d.example);
+    right = `<div class="dy-r"><span>${esc(by)} ob ${hm(new Date(d.givenAt))}</span>${S.canWrite ? `<button class="undo" data-act="undo" data-key="${esc(sl.key)}">Razveljavi</button>` : ''}</div>`;
+  } else if (st === 'late') right = '<span class="pill late">zamuja</span>';
+  const mark = given ? `<span class="tick${S.justGiven === sl.key ? ' pop' : ''}" role="img" aria-label="Opravljeno"><i>${I.check}</i></span>`
+    : S.canWrite ? `<button class="tick" data-act="give" data-key="${esc(sl.key)}" aria-label="Označi kot opravljeno: ${esc(s.name)} ob ${esc(sl.time)}"><i></i></button>` : '<span class="tick"><i></i></span>';
+  const undone = (sl.dose && sl.dose.undoneAt && !given) ? `<div class="note">Razveljavljeno ob ${hm(new Date(sl.dose.undoneAt))} · ${esc(who(sl.dose.undoneBy))}</div>` : '';
+  const guard = (S.confirm && S.confirm.key === sl.key) ? `<div class="guard" role="alert"><p>${esc(S.confirm.msg)}</p><div class="btns"><button class="btn btn-primary" data-act="give-force" data-key="${esc(sl.key)}">Vseeno označi</button><button class="btn" data-act="guard-cancel">Prekliči</button></div></div>` : '';
+  return `<li class="dy is-${st}">${mark}<div class="rmain"><div class="n">${esc(s.name)}</div><div class="sub">${esc([sl.time, s.dose].filter(Boolean).join(' · '))}</div></div>${right}${undone}${guard}</li>`;
 }
 function todayHtml(){
   const now = new Date(), t = today();
   const slots = slotsFor(t);
   S.slotIndex = new Map(slots.map(s => [s.key, s]));
   const st = slots.map(s => status(s, now));
-  let h = `<section class="today"><span class="eyebrow">${DAY_L[now.getDay()]}, ${now.getDate()}. ${MON_G[now.getMonth()]}</span>`;
+  const date = `${DAY_L[now.getDay()]}, ${now.getDate()}. ${MON_G[now.getMonth()]}`;
+  let h = `<div class="lab"><span class="eyebrow">Naslednje</span><span class="eyebrow">${date}</span></div><div class="nxs">`;
+  const ni = nextIdx(st), hero = ni >= 0 ? slots[ni] : null;
   if (!slots.length) {
-    h += '</section><section class="sec">';
     if (role() === 'skrbnik') h += emptyCard('Za danes ni ničesar na sporedu.', 'Ko lastnik doda obrok ali zdravilo, se pokaže tukaj.');
     else h += emptyCard('Za danes ni ničesar na sporedu.', 'Dodaj hranjenje ali zdravilo z uro, pa se pokaže tukaj.', S.canWrite ? `<div class="btns"><button class="btn btn-primary" data-act="new-sched">${I.plus}Hranjenje ali zdravilo</button>${canScan() ? `<button class="btn" data-act="scan-med">${I.cam}Slikaj ovojnico</button>` : ''}</div>` : '');
-    return h + '</section>';
+  } else h += nowCard(slots, st, now);
+  const kinds = hero ? [hero.s.kind === 'zdravilo' ? 'hrana' : 'zdravilo'] : slots.length ? ['hrana', 'zdravilo'] : [];
+  for (const k of kinds) {
+    const n = nextOfKind(k, hero && hero.key, now);
+    if (n) { const r = relWhen(n.dt, now); h += nxRow(k === 'zdravilo' ? 'Zdravilo' : 'Obrok', n.s.name, r.when, r.rel, r.late); }
   }
-  h += `<p class="today-sum">${esc(daySummary(slots, st))}</p>${nowCard(slots, st, now)}</section>`;
-  const ni = nextIdx(st);
-  const rest = slots.map((s,i) => [s, st[i], i]).filter(([s,x,i]) => x !== 'given' && i !== ni);
-  const done = slots.map((s,i) => [s, st[i]]).filter(([s,x]) => x === 'given');
-  if (rest.length) h += `<section class="sec"><h2>Še danes</h2><ol class="vps">${rest.map(([s,x]) => vpRow(s, x, now)).join('')}</ol></section>`;
-  if (done.length && ni >= 0) {
-    const sum = done.map(([s]) => `${s.s.name} ${hm(new Date(s.dose.givenAt))}`).join(' · ');
-    h += `<section class="sec" style="padding-top:${rest.length ? 4 : 26}px"><button class="donegrp" data-act="toggle-done" aria-expanded="${showDone}"><span class="oks">${done.slice(0,3).map(() => `<span>${I.check}</span>`).join('')}</span><span class="rmain"><span class="n">${done.length} opravljeno</span><span class="sub">${esc(sum)}</span></span><span class="chev">${I.chevDown}</span></button>${showDone ? `<ol class="vps">${done.map(([s,x]) => vpRow(s, x, now)).join('')}</ol>` : ''}</section>`;
-  } else if (done.length) {
-    h += `<section class="sec"><h2>Opravljeno danes</h2><ol class="vps">${done.map(([s,x]) => vpRow(s, x, now)).join('')}</ol></section>`;
+  h += vetRow() + '</div>';
+  if (slots.length) {
+    const done = st.filter(x => x === 'given').length;
+    h += `<div class="lab"><span class="eyebrow">Danes</span><b>${done} od ${slots.length} opravljeno</b></div><ol class="day">${slots.map((s,i) => dyRow(s, st[i], now)).join('')}</ol>`;
   }
   return h;
 }
@@ -900,16 +999,56 @@ function inviteCard(){
   if (familyRows().some(r => r.id !== S.me.id) || pendingInvites().length) return '';
   return `<section class="sec"><div class="invite-card"><b>Povabi družino</b><p>Ko kdo da hrano ali zdravilo, vsi doma takoj vidijo, kdo in kdaj.</p><div class="btns"><button class="btn btn-primary" data-act="new-member">${I.plus}Povabi</button><button class="link" data-act="hide-invite">Kasneje</button></div></div></section>`;
 }
+const FC_DEF = {cepljenje:7, zajedavci:7, zaloga:5};
+function fcCfg(p){ return Object.assign({}, FC_DEF, (p && p.forecast) || {}); }
+function forecastItems(cfg){
+  const t = today(), now = new Date(), out = [];
+  if (cfg.zaloga > 0) for (const s of mine(S.schedules)) {
+    if (!activeOn(s, t)) continue;
+    const st = stockInfo(s); if (!st) continue;
+    let short = false;
+    if (s.endDate) {
+      const restToday = slotsFor(t).filter(x => x.s.id === s.id && status(x, now) !== 'given').length;
+      short = st.left < (restToday + Math.max(0, daysBetween(t, s.endDate)) * (s.times||[]).length) * st.per;
+    }
+    if (short || st.daysLeft <= cfg.zaloga) out.push({n:`Zaloga: ${s.name}`, sub:`še ${num(st.left)} ${st.unit}`, label: st.daysLeft <= 0 ? 'zmanjkalo' : `za ${st.daysLeft} ${dni(st.daysLeft)}`, late: st.daysLeft <= 0, act:'edit-sched', id:s.id, actLabel:'Dopolni', days:st.daysLeft});
+  }
+  for (const r of reminders()) {
+    const k = r.e.kind; if (k === 'pregled') continue;
+    const lead = k === 'cepljenje' ? cfg.cepljenje : k === 'zajedavci' ? cfg.zajedavci : 7;
+    if (!(lead > 0) || r.days > lead) continue;
+    out.push({n:(k === 'cepljenje' ? 'Cepljenje: ' : '') + r.e.title, sub:fmtDay(r.e.nextDue), label:r.label.toLowerCase(), late:r.days < 0, act:'done-rem', id:r.e.id, actLabel:'Opravljeno', days:r.days});
+  }
+  return out.sort((x,y) => x.days - y.days);
+}
+function fcRows(items, actions){
+  return items.map(x => `<div class="row"><div class="rmain"><div class="n">${esc(x.n)}</div><div class="sub">${esc(x.sub)}</div></div><div class="rside"><b${x.late ? ' class="is-late"' : ''}>${esc(x.label)}</b>${actions && S.canWrite ? `<button class="lnk" data-act="${x.act}" data-id="${esc(x.id)}">${x.actLabel}</button>` : ''}</div></div>`).join('');
+}
 function danesHtml(){
   let h = todayHtml();
-  const rem = reminders().filter(r => r.days <= 30);
-  const stock = stockWarnings();
-  if (rem.length || stock.length) {
-    h += `<section class="sec"><div class="sec-head"><h2>Prihaja</h2><a class="btn-add" href="#zdravje">Vsi roki${I.chevRight}</a></div><div class="rows">${stock.map(stockRow).join('')}${rem.map(remRow).join('')}</div></section>`;
-  } else if (!mine(S.events).some(e => ['cepljenje','zajedavci','pregled'].includes(e.kind))) {
-    h += `<section class="sec"><h2>Prihaja</h2>${emptyCard('Še ni rokov za cepljenja in zajedavce.', canScan() ? 'Slikaj cepilno knjižico, pa nastavim roke.' : 'Vpiši zadnje cepljenje in naslednji rok, pa te opomnim.', S.canWrite ? (canScan() ? `<button class="btn-sm" data-act="scan-book">${I.cam}Slikaj knjižico</button>` : `<button class="btn-sm" data-act="new-event">${I.plus}Vpis</button>`) : '')}</section>`;
-  }
+  const items = forecastItems(fcCfg(pet()));
+  h += `<div class="lab"><span class="eyebrow">Napoved</span>${S.canWrite ? '<button class="lnk" data-act="forecast">Nastavi</button>' : ''}</div>`;
+  if (items.length) h += `<div class="rows fc">${fcRows(items, true)}</div>`;
+  else if (!mine(S.events).some(e => ['cepljenje','zajedavci'].includes(e.kind))) h += emptyCard('Še ni rokov za cepljenja in zajedavce.', canScan() ? 'Slikaj cepilno knjižico, pa nastavim roke.' : 'Vpiši zadnje cepljenje in naslednji rok, pa ga pokažem tukaj, preden pride.', S.canWrite ? (canScan() ? `<button class="btn-sm" data-act="scan-book">${I.cam}Slikaj knjižico</button>` : `<button class="btn-sm" data-act="new-event">${I.plus}Vpis</button>`) : '');
+  else h += '<div class="rows fc"><div class="row"><div class="rmain"><div class="sub">V naslednjih dneh ni rokov in zaloge so v redu.</div></div></div></div>';
   return h + installCard() + inviteCard();
+}
+function forecastForm(){
+  const p = pet(); if (!p) return;
+  const cfg = fcCfg(p);
+  const seg = (name, opts, cur) => `<div class="seg">${opts.map(o => `<label><input type="radio" name="${name}" value="${o}" ${Number(cur) === o ? 'checked' : ''}>${o ? o + ' ' + dni(o) : 'Ne'}</label>`).join('')}</div>`;
+  const pv = c => { const it = forecastItems(c); return it.length ? fcRows(it, false) : '<p>S temi nastavitvami danes ne bi videl ničesar.</p>'; };
+  const f = openSheet('Napoved', `
+    <p class="hint" style="margin:0">Na zaslonu Danes vidiš roke, preden pridejo. Tu izbereš, koliko prej.</p>
+    <div class="field"><span class="eyebrow">S temi nastavitvami danes vidiš</span><div class="pv" id="fc-pv">${pv(cfg)}</div></div>
+    <div><span class="eyebrow">Roki · pokaži toliko dni prej</span>
+      <div class="setrow" style="margin-top:10px"><b>Cepljenja</b>${seg('cepljenje', [0,3,7,14], cfg.cepljenje)}</div>
+      <div class="setrow"><b>Zajedavci</b>${seg('zajedavci', [0,3,7,14], cfg.zajedavci)}</div></div>
+    <div><span class="eyebrow">Zaloga zdravil · pokaži, ko je še za</span>
+      <div class="setrow" style="margin-top:10px"><div><b>Vsa zdravila</b><small>Velja za vsako zdravilo, ki ima vpisano zalogo.</small></div>${seg('zaloga', [0,2,3,5], cfg.zaloga)}</div></div>
+    <p class="hint" style="margin:0">Naslednji obisk veterinarja je vedno viden zgoraj pod Naslednje. Zamujeni roki ostanejo vidni, dokler jih ne označiš.</p>`,
+    'Shrani', async fd => w(() => col('pets').doc(p.id).update({forecast:{cepljenje:Number(fd.get('cepljenje')), zajedavci:Number(fd.get('zajedavci')), zaloga:Number(fd.get('zaloga'))}})));
+  f.addEventListener('change', () => { const fd = new FormData(f); $('#fc-pv').innerHTML = pv({cepljenje:Number(fd.get('cepljenje')), zajedavci:Number(fd.get('zajedavci')), zaloga:Number(fd.get('zaloga'))}); });
 }
 function vpRow(sl, st, now){
   const s = sl.s;
@@ -1702,6 +1841,7 @@ document.addEventListener('click', async ev => {
     case 'undo': undo(t.dataset.key); break;
     case 'pet': closeSheet(); S.petId = id; LS.set('dano.pet', id); S.confirm = null; showDone = false; render(); break;
     case 'pet-menu': petMenu(); break;
+    case 'forecast': forecastForm(); break;
     case 'toggle-done': showDone = !showDone; render(); break;
     case 'logout': if (armed(t, 'Res se odjavim?')) { if (SB) await SB.auth.signOut(); } break;
     case 'auth-view': AUTH.view = t.dataset.v; AUTH.msg = ''; render(); break;
@@ -1930,7 +2070,7 @@ function welcomeHtml(){
   const feats = [['bowl', 'Hrana in zdravila z uro', 'Odkljukaš, ko daš. Ni več dvojnih odmerkov.'], ['syringe', 'Cepljenja in zajedavci', 'Opomnik, preden rok poteče.'], ['user', 'Družina in skrbniki', 'Vsi vidijo isto, varuh samo, kar rabi.']];
   return `<section class="ob welcome"><div class="ob-top">
     <span class="logo-tile">${I.logo}</span>
-    <h1 class="wordmark">Dano</h1>
+    <h1 class="wordmark">Pasji utrip</h1>
     <p class="ob-sub">${inv ? 'Imaš povabilo. Ustvari račun ali se prijavi, nato ga sprejmeš.' : 'Hrana, zdravila in cepljenja na enem mestu. Vsi doma vidijo, kdo je kaj že dal.'}</p>
     <div class="feats">${feats.map(([i, a, b]) => `<div class="feat"><span class="tile sm">${I[i]}</span><div><b>${a}</b><span>${b}</span></div></div>`).join('')}</div>
   </div><div class="ob-bot"><button class="btn btn-primary btn-wide" data-act="auth-view" data-v="register">Ustvari račun</button><button class="btn btn-wide" data-act="auth-view" data-v="login">Prijava</button></div></section>`;
@@ -2034,7 +2174,7 @@ function installCard(){
   if (standalone || LS.get('dano.installHide') || !SB) return '';
   const ios = /iPhone|iPad|iPod/.test(navigator.userAgent);
   const how = ios ? 'V Safariju tapni Deli in izberi Dodaj na začetni zaslon.' : 'V meniju brskalnika izberi Namesti aplikacijo ali Dodaj na začetni zaslon.';
-  return `<section class="sec"><div class="invite-card"><b>Dodaj Dano na začetni zaslon</b><p>${how} Potem se odpre čez cel zaslon, kot prava aplikacija.</p><div class="btns"><button class="link" data-act="hide-install">V redu</button></div></div></section>`;
+  return `<section class="sec"><div class="invite-card"><b>Dodaj Pasji utrip na začetni zaslon</b><p>${how} Potem se odpre čez cel zaslon, kot prava aplikacija.</p><div class="btns"><button class="link" data-act="hide-install">V redu</button></div></div></section>`;
 }
 
 async function resolveNames(){ /* imena so v zapisih članov */ }
