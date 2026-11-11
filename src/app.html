@@ -706,7 +706,7 @@ function reminders(){
   const t = today();
   const g = new Map();
   for (const e of mine(S.events)) {
-    if (!['cepljenje','pregled','zajedavci','drugo'].includes(e.kind)) continue;
+    if (!['cepljenje','pregled','zajedavci','drugo'].includes(e.kind) || isPlanned(e)) continue;
     const k = e.kind + '|' + String(e.title||'').trim().toLowerCase();
     const cur = g.get(k);
     if (!cur || e.date > cur.date || (e.date === cur.date && (e.createdAt||0) > (cur.createdAt||0))) g.set(k, e);
@@ -846,26 +846,34 @@ function nowCard(slots, st, now){
   return `<div class="now"><div class="now-top"><span class="eyebrow">${eyebrow}</span>${pill}</div><div class="now-main"><span class="tile lg">${kindIcon(s)}</span><div><h2 class="now-name">${esc(s.name)}</h2><div class="now-sub">${esc([sl.time, s.dose].filter(Boolean).join(' · '))}</div></div></div>${othersHtml()}${btn}</div>`;
 }
 function fmtDayShort(s){ const d = parseYmd(s); return `${DAY_L[d.getDay()].slice(0,3)}, ${d.getDate()}. ${MON_S[d.getMonth()]}`; }
-function vetNext(){
+const isPlanned = e => e.kind === 'termin' || e.planned === true;
+function plannedItems(){
   const t = today();
-  const ts = mine(S.events).filter(e => e.kind === 'termin').sort((x,y) => (x.date + (x.time||'')).localeCompare(y.date + (y.time||'')));
-  if (ts.length) return {e:ts[0], days:daysBetween(t, ts[0].date), date:ts[0].date, termin:true};
-  const r = reminders().filter(x => x.e.kind === 'pregled' && x.days <= 30)[0];
-  return r ? {e:r.e, days:r.days, date:r.e.nextDue, termin:false} : null;
+  return mine(S.events).filter(isPlanned).sort((x,y) => (x.date + (x.time||'')).localeCompare(y.date + (y.time||''))).map(e => ({e, days:daysBetween(t, e.date)}));
 }
-function vetCard(){
-  const v = vetNext(), canAdd = S.canWrite && role() !== 'skrbnik';
-  if (!v) return canAdd ? `<button class="add-row vet-add" data-act="new-vet"><span class="plus">${I.steth}</span><span><b>Obisk veterinarja</b><small>Vpiši termin, pa se pokaže tukaj.</small></span></button>` : '';
-  const e = v.e, d = v.days;
-  const pill = d < 0 ? (v.termin ? '<span class="pill warn">Je bil opravljen?</span>' : `<span class="pill late">Zamuja ${-d} ${dni(-d)}</span>`)
+function vetReminder(){
+  if (mine(S.events).some(e => isPlanned(e) && (e.kind === 'termin' || e.kind === 'pregled'))) return null;
+  return reminders().filter(x => x.e.kind === 'pregled' && x.days <= 30)[0] || null;
+}
+function planCard(e, d){
+  const k = KINDS[e.kind] || KINDS.drugo, canEdit = S.canWrite && role() !== 'skrbnik';
+  const pill = d < 0 ? '<span class="pill warn">Je bilo opravljeno?</span>'
     : d === 0 ? `<span class="pill due">Danes${e.time ? ' ob ' + esc(e.time) : ''}</span>` : d === 1 ? `<span class="pill edge">Jutri${e.time ? ' ob ' + esc(e.time) : ''}</span>` : `<span class="pill edge">Čez ${d} ${dni(d)}</span>`;
   let rel = '';
-  if (d === 0 && e.time) { const m = Math.round((at(v.date, e.time) - new Date()) / 60000); rel = m > 0 ? `Čez ${dur(m)}.` : m > -180 ? 'Zdaj ali pravkar.' : ''; }
-  let btn = '';
-  if (S.canWrite) btn = v.termin
-    ? (d <= 0 ? `<button class="btn-sm" data-act="vet-done" data-id="${esc(e.id)}">${I.check}Opravljeno</button>` : (canAdd ? `<button class="btn-sm" data-act="edit-event" data-id="${esc(e.id)}">${I.edit}Uredi</button>` : ''))
-    : `<button class="btn-sm" data-act="done-rem" data-id="${esc(e.id)}">${I.check}Opravljeno</button>`;
-  return `<div class="vp vetc${d < 0 && !v.termin ? ' is-late' : ''}"><span class="tile">${I.steth}</span><div class="rmain"><div class="vp-meta"><span>Veterinar · ${esc(fmtDayShort(v.date))}${e.time ? ` · <b style="color:var(--ink)">ob ${esc(e.time)}</b>` : ''}</span></div><div class="vp-name">${esc(e.title)}</div>${rel ? `<div class="vp-sub"><b>${rel}</b></div>` : ''}${v.termin && e.note ? `<div class="vp-sub">${esc(e.note)}</div>` : ''}</div><div class="rside">${pill}${btn}</div></div>`;
+  if (d === 0 && e.time) { const m = Math.round((at(e.date, e.time) - new Date()) / 60000); rel = m > 0 ? `Čez ${dur(m)}.` : m > -180 ? 'Zdaj ali pravkar.' : ''; }
+  const btn = !S.canWrite ? '' : d <= 0 ? `<button class="btn-sm" data-act="vet-done" data-id="${esc(e.id)}">${I.check}Opravljeno</button>` : canEdit ? `<button class="btn-sm" data-act="edit-event" data-id="${esc(e.id)}">${I.edit}Uredi</button>` : '';
+  const lab = e.kind === 'termin' ? 'Veterinar' : k.l;
+  return `<div class="vp vetc"><span class="tile">${I[k.i] || I.calendar}</span><div class="rmain"><div class="vp-meta"><span>${lab} · ${esc(fmtDayShort(e.date))}${e.time ? ` · <b style="color:var(--ink)">ob ${esc(e.time)}</b>` : ''}</span></div><div class="vp-name">${esc(e.title)}</div>${rel ? `<div class="vp-sub"><b>${rel}</b></div>` : ''}${e.note ? `<div class="vp-sub">${esc(e.note)}</div>` : ''}</div><div class="rside">${pill}${btn}</div></div>`;
+}
+// Načrtovano za danes (ali zamujeno) gre nad »Zdaj na vrsti«, prihodnje pod njo.
+function plansTop(){ return plannedItems().filter(x => x.days <= 0).map(x => planCard(x.e, x.days)).join(''); }
+function plansBelow(){
+  const canAdd = S.canWrite && role() !== 'skrbnik';
+  let h = plannedItems().filter(x => x.days > 0).slice(0, 3).map(x => planCard(x.e, x.days)).join('');
+  const r = vetReminder();
+  if (r) h += `<div class="vp vetc${r.days < 0 ? ' is-late' : ''}"><span class="tile">${I.steth}</span><div class="rmain"><div class="vp-meta"><span>Veterinar · ${esc(fmtDayShort(r.e.nextDue))}</span></div><div class="vp-name">${esc(r.e.title)}</div></div><div class="rside"><span class="pill ${r.days < 0 ? 'late' : 'edge'}">${r.label}</span>${S.canWrite ? `<button class="btn-sm" data-act="done-rem" data-id="${esc(r.e.id)}">${I.check}Opravljeno</button>` : ''}</div></div>`;
+  if (!h && !plannedItems().length && canAdd) h = `<button class="add-row vet-add" data-act="new-vet"><span class="plus">${I.steth}</span><span><b>Obisk veterinarja</b><small>Vpiši termin, pa se pokaže tukaj.</small></span></button>`;
+  return h;
 }
 function vetForm(e){
   const v = e || {date:ymd(addDays(new Date(), 1)), time:''};
@@ -874,7 +882,7 @@ function vetForm(e){
     <div class="grid2"><div class="field"><label class="lbl" for="v-date">Datum</label><input id="v-date" type="date" name="date" required value="${esc(v.date)}"></div>
     <div class="field"><label class="lbl" for="v-time">Ura</label><input id="v-time" type="time" name="time" value="${esc(v.time || '')}"></div></div>
     <div class="field"><label class="lbl" for="v-note">Opomba</label><textarea id="v-note" name="note" rows="2" placeholder="npr. vzemi cepilno knjižico">${esc(v.note)}</textarea></div>
-    <p class="info">Termin se pokaže na vrhu zaslona Danes. Ko je obisk mimo, ga označiš kot opravljenega in se zapiše v Časovnico kot pregled.</p>`,
+    <p class="info">Termin se pokaže na vrhu zaslona Danes, dokler ga ne označiš kot opravljenega.</p>`,
     'Shrani', async fd => {
       const title = val(fd,'title'), date = val(fd,'date');
       if (!title) { toast('Vpiši, zakaj greš.'); return false; }
@@ -893,9 +901,9 @@ function todayHtml(){
     h += '</section><section class="sec">';
     if (role() === 'skrbnik') h += emptyCard('Za danes ni ničesar na sporedu.', 'Ko lastnik doda obrok ali zdravilo, se pokaže tukaj.');
     else h += emptyCard('Za danes ni ničesar na sporedu.', 'Dodaj hranjenje ali zdravilo z uro, pa se pokaže tukaj.', S.canWrite ? `<div class="btns"><button class="btn btn-primary" data-act="new-sched">${I.plus}Hranjenje ali zdravilo</button>${canScan() ? `<button class="btn" data-act="scan-med">${I.cam}Slikaj ovojnico</button>` : ''}</div>` : '');
-    return h + '</section>' + (vetNext() ? `<section class="sec">${vetCard()}</section>` : '');
+    return h + '</section>' + ((plannedItems().length || vetReminder()) ? `<section class="sec" style="margin-top:0">${plansTop()}${plansBelow()}</section>` : '');
   }
-  h += `<p class="today-sum">${esc(daySummary(slots, st))}</p>${(() => { const vn = vetNext(), top = vn && vn.days <= 0; return (top ? vetCard() : '') + nowCard(slots, st, now) + (top ? '' : vetCard()); })()}</section>`;
+  h += `<p class="today-sum">${esc(daySummary(slots, st))}</p>${plansTop()}${nowCard(slots, st, now)}${plansBelow()}</section>`;
   const ni = nextIdx(st);
   const rest = slots.map((s,i) => [s, st[i], i]).filter(([s,x,i]) => x !== 'given' && i !== ni);
   const done = slots.map((s,i) => [s, st[i]]).filter(([s,x]) => x === 'given');
@@ -915,8 +923,8 @@ function inviteCard(){
 }
 function danesHtml(){
   let h = todayHtml();
-  const vn = vetNext();
-  const rem = reminders().filter(r => r.days <= 30 && !(vn && vn.e.id === r.e.id));
+  const vr = vetReminder();
+  const rem = reminders().filter(r => r.days <= 30 && !(vr && vr.e.id === r.e.id));
   const stock = stockWarnings();
   if (rem.length || stock.length) {
     h += `<section class="sec"><div class="sec-head"><h2>Prihaja</h2><a class="btn-add" href="#zdravje">Vsi roki${I.chevRight}</a></div><div class="rows">${stock.map(stockRow).join('')}${rem.map(remRow).join('')}</div></section>`;
@@ -1140,7 +1148,7 @@ function casovnicaHtml(){
   const F = {vse:null, cepljenje:['cepljenje'], pregled:['pregled'], zajedavci:['zajedavci'], opazanje:['opazanje'], teza:['teza']};
   const lab = {vse:'Vse', cepljenje:'Cepljenja', pregled:'Pregledi', zajedavci:'Zajedavci', opazanje:'Opažanja', teza:'Teža'};
   const f = Object.prototype.hasOwnProperty.call(F, S.filter) ? S.filter : 'vse';
-  const items = mine(S.events).filter(e => e.kind !== 'termin' && (!F[f] || F[f].includes(e.kind))).sort((a,b) => (b.date + (b.time||'')).localeCompare(a.date + (a.time||'')) || (b.createdAt||0) - (a.createdAt||0));
+  const items = mine(S.events).filter(e => !F[f] || F[f].includes(e.kind === 'termin' ? 'pregled' : e.kind)).sort((a,b) => (b.date + (b.time||'')).localeCompare(a.date + (a.time||'')) || (b.createdAt||0) - (a.createdAt||0));
   let h = `<section class="sec"><div class="sec-head"><h2>Časovnica</h2>${S.canWrite ? `<div class="btns"><button class="btn-sm" data-act="new-note">${I.note}Opažanje</button><button class="btn-sm" data-act="new-vet">${I.steth}Termin</button><button class="btn-sm dark" data-act="new-event">${I.plus}Vpis</button></div>` : ''}</div>`;
   h += `<div class="filters" role="group" aria-label="Pokaži">${Object.keys(F).map(k => `<button class="fchip" data-act="filter" data-f="${k}" aria-pressed="${k === f}">${lab[k]}</button>`).join('')}</div>`;
   if (!items.length) return h + emptyCard(f === 'vse' ? 'Časovnica je še prazna.' : 'Tu še ni vpisov.', 'Vpiši opažanje, ko se kaj spremeni. Veterinar bo vprašal, od kdaj in kako pogosto se dogaja.') + '</section>';
@@ -1167,7 +1175,7 @@ function tlItem(e){
   if (e.note) bits += `<p class="tl-note">${esc(e.note)}</p>`;
   if (e.nextDue) bits += `<div class="sub">Naslednji rok: ${fmtDate(e.nextDue)}</div>`;
   bits += photosHtml(e.photos);
-  return `<li class="tl-item" style="--kc:${k.c}"><div class="tl-date">${fmtNum(e.date)}${e.time ? `<small>${esc(e.time)}</small>` : ''}</div><div class="tl-dot" aria-hidden="true"></div><div class="tl-body"><div class="tl-top"><span class="tl-tag${e.kind === 'opazanje' ? ' op' : ''}">${k.l}</span>${S.canWrite ? `<button class="btn-add" data-act="edit-event" data-id="${esc(e.id)}">${I.edit}Uredi</button>` : ''}</div><div class="n">${esc(title)}</div>${bits}<div class="by">vpis: ${esc(who(e.by, e.example))}</div></div></li>`;
+  return `<li class="tl-item" style="--kc:${k.c}"><div class="tl-date">${fmtNum(e.date)}${e.time ? `<small>${esc(e.time)}</small>` : ''}</div><div class="tl-dot" aria-hidden="true"></div><div class="tl-body"><div class="tl-top"><span class="tl-tag${e.kind === 'opazanje' ? ' op' : ''}">${k.l}${isPlanned(e) ? ' · načrtovano' : ''}</span>${S.canWrite ? `<button class="btn-add" data-act="edit-event" data-id="${esc(e.id)}">${I.edit}Uredi</button>` : ''}</div><div class="n">${esc(title)}</div>${bits}<div class="by">vpis: ${esc(who(e.by, e.example))}</div></div></li>`;
 }
 
 /* Pes: profil, družina, nujna kartica */
@@ -1664,7 +1672,10 @@ function eventForm(e, pre){
     <div class="field"><label class="lbl" for="e-title">Naziv</label><input id="e-title" name="title" list="e-presets" required autocomplete="off" value="${esc(v.title)}" placeholder="npr. Steklina"><datalist id="e-presets">${presetOpts(v.kind)}</datalist></div>
     <p class="info" id="e-rabies" ${/steklin/i.test(v.title || '') ? '' : 'hidden'}>Cepljenje psov proti steklini je v Sloveniji obvezno in rok je strog: zamujena ponovitev se šteje kot prvo cepljenje. Zato se opomnik pokaže že 30 dni prej.</p>
     <div class="grid2"><div class="field"><label class="lbl" for="e-date">Datum</label><input id="e-date" type="date" name="date" required value="${esc(v.date)}"></div>
-    <div class="field"><label class="lbl" for="e-next">Naslednji rok</label><input id="e-next" type="date" name="nextDue" value="${esc(v.nextDue || '')}"></div></div>
+    <div class="field"><label class="lbl" for="e-time">Ura</label><input id="e-time" type="time" name="time" value="${esc(v.time || '')}"></div></div>
+    <div class="field" id="e-statef"><span class="lbl">Za današnji datum</span><div class="seg"><label><input type="radio" name="state" value="plan" ${e && !e.planned ? '' : 'checked'}>Še pride</label><label><input type="radio" name="state" value="done" ${e && !e.planned ? 'checked' : ''}>Že opravljeno</label></div></div>
+    <p class="info" id="e-planinfo" hidden>Načrtovan vpis se pokaže na vrhu zaslona Danes, dokler ga ne označiš kot opravljenega.</p>
+    <div class="field" id="e-nextf"><label class="lbl" for="e-next">Naslednji rok</label><input id="e-next" type="date" name="nextDue" value="${esc(v.nextDue || '')}"></div>
     <div class="qchips"><span class="hint">Rok čez:</span>${[['1m','1 mes.'],['3m','3 mes.'],['1y','1 leto'],['3y','3 leta'],['0','brez']].map(([k,l]) => `<button type="button" class="qchip" data-act="due" data-add="${k}">${l}</button>`).join('')}</div>
     <div class="field" id="e-batchf" ${v.kind === 'cepljenje' ? '' : 'hidden'}><label class="lbl" for="e-batch">Cepivo in serija</label><input id="e-batch" name="batch" class="mono" value="${esc(v.batch)}" placeholder="z nalepke v knjižici"></div>
     <div class="field"><label class="lbl" for="e-note">Opomba</label><textarea id="e-note" name="note" rows="2">${esc(v.note)}</textarea></div>
@@ -1675,11 +1686,14 @@ function eventForm(e, pre){
       if (!date) { toast('Izberi datum.'); return false; }
       if (next && next <= date) { toast('Naslednji rok mora biti za datumom vpisa.'); return false; }
       const kind = kinds.includes(fd.get('kind')) ? fd.get('kind') : 'drugo';
+      const planned = date > today() || (date === today() && fd.get('state') !== 'done');
       const photos = keepPhotos(fd).concat(await uploadFiles(fd.getAll('files')));
-      const doc = {petId: e ? e.petId : S.petId, kind, title, date, nextDue:next, batch: kind === 'cepljenje' ? val(fd,'batch') : '', note:val(fd,'note'), photos, by: e ? (e.by || null) : (S.me.id || null), createdAt: e ? (e.createdAt || Date.now()) : Date.now(), example:false};
+      const doc = {petId: e ? e.petId : S.petId, kind, title, date, time:val(fd,'time') || null, planned, nextDue:next, batch: kind === 'cepljenje' ? val(fd,'batch') : '', note:val(fd,'note'), photos, by: e ? (e.by || null) : (S.me.id || null), createdAt: e ? (e.createdAt || Date.now()) : Date.now(), example:false};
       return w(() => col('events').doc(e ? e.id : rid()).set(doc));
     }, e ? delBtn('del-event', e.id) : '');
-  f.addEventListener('input', ev => { if (ev.target.name === 'title') $('#e-rabies').hidden = !/steklin/i.test(ev.target.value); });
+  const syncPlan = () => { const d = $('#e-date').value, t = today(); $('#e-statef').hidden = d !== t; const pl = d > t || (d === t && new FormData(f).get('state') !== 'done'); $('#e-planinfo').hidden = !pl; };
+  syncPlan();
+  f.addEventListener('input', ev => { if (ev.target.name === 'title') $('#e-rabies').hidden = !/steklin/i.test(ev.target.value); if (ev.target.name === 'date' || ev.target.name === 'state') syncPlan(); });
   f.addEventListener('change', ev => { if (ev.target.name === 'kind') { $('#e-presets').innerHTML = presetOpts(ev.target.value); $('#e-batchf').hidden = ev.target.value !== 'cepljenje'; } });
 }
 
@@ -1735,7 +1749,7 @@ document.addEventListener('click', async ev => {
     case 'edit-sched': { const s = byId(S.schedules, id); if (s) schedForm(s); break; }
     case 'new-event': eventForm(null); break;
     case 'new-vet': vetForm(null); break;
-    case 'vet-done': { const e = byId(S.events, id); if (e && await w(() => col('events').doc(id).update({kind:'pregled'}))) toast('Obisk je zapisan v Časovnico.'); break; }
+    case 'vet-done': { const e = byId(S.events, id); if (e && await w(() => col('events').doc(id).update({kind: e.kind === 'termin' ? 'pregled' : e.kind, planned:false}))) toast('Zapisano v Časovnico kot opravljeno.'); break; }
     case 'new-note': noteForm(null); break;
     case 'new-weight': weightForm(null); break;
     case 'edit-event': { const e = byId(S.events, id); if (!e) break; if (e.kind === 'opazanje') noteForm(e); else if (e.kind === 'termin') vetForm(e); else if (e.kind === 'teza') weightForm(e); else eventForm(e); break; }
