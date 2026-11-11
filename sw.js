@@ -1,5 +1,5 @@
 // Pasji utrip: aplikacija deluje tudi ob slabi povezavi. Vedno najprej poskusi svežo verzijo z omrežja.
-const CACHE = 'utrip-v3';
+const CACHE = 'utrip-v4';
 const SHELL = ['./', './index.html', './config.js', './vendor/supabase.js', './manifest.webmanifest', './icons/icon-192.png',
   './fonts/barlow-latin-400-normal.woff2', './fonts/barlow-latin-500-normal.woff2', './fonts/barlow-latin-600-normal.woff2', './fonts/barlow-latin-700-normal.woff2',
   './fonts/barlow-latin-ext-400-normal.woff2', './fonts/barlow-latin-ext-500-normal.woff2', './fonts/barlow-latin-ext-600-normal.woff2', './fonts/barlow-latin-ext-700-normal.woff2'];

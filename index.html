@@ -180,6 +180,12 @@ h3{font:600 17px/22px var(--f);margin:0}
 .oks span{width:32px;height:32px;border-radius:50%;background:var(--ok);color:var(--on-ok);display:grid;place-items:center;margin-left:-10px;box-shadow:0 0 0 2px var(--card)}
 .oks svg{width:16px;height:16px}
 
+.vetc{margin-top:12px}
+.vetc + .now{margin-top:12px}
+.today .vetc:first-of-type{margin-top:16px}
+.vetc .rside{align-items:flex-end}
+.vet-add{margin-top:12px;background:none}
+
 /* Oznake in gumbi */
 .pill{display:inline-flex;align-items:center;gap:5px;font:600 13px/16px var(--f);padding:6px 10px;border-radius:999px;background:var(--line);color:var(--muted);white-space:nowrap}
 .pill svg{width:15px;height:15px}
@@ -512,6 +518,7 @@ const DAY_G = ['nedelje','ponedeljka','torka','srede','četrtka','petka','sobote
 const KINDS = {
   cepljenje:{l:'Cepljenje', c:'var(--ink)', i:'syringe'},
   pregled:{l:'Pregled', c:'var(--ink)', i:'steth'},
+  termin:{l:'Obisk veterinarja', c:'var(--ink)', i:'steth'},
   zajedavci:{l:'Zajedavci', c:'var(--ink)', i:'bug'},
   opazanje:{l:'Opažanje', c:'var(--late)', i:'note'},
   teza:{l:'Teža', c:'var(--muted)', i:'scale'},
@@ -870,6 +877,44 @@ function nowCard(slots, st, now){
   const btn = S.canWrite ? `<button class="btn-hero" data-act="give" data-key="${esc(sl.key)}">${I.check}${esc(giveLabel(s))}</button>` : '';
   return `<div class="now"><div class="now-top"><span class="eyebrow">${eyebrow}</span>${pill}</div><div class="now-main"><span class="tile lg">${kindIcon(s)}</span><div><h2 class="now-name">${esc(s.name)}</h2><div class="now-sub">${esc([sl.time, s.dose].filter(Boolean).join(' · '))}</div></div></div>${othersHtml()}${btn}</div>`;
 }
+function fmtDayShort(s){ const d = parseYmd(s); return `${DAY_L[d.getDay()].slice(0,3)}, ${d.getDate()}. ${MON_S[d.getMonth()]}`; }
+function vetNext(){
+  const t = today();
+  const ts = mine(S.events).filter(e => e.kind === 'termin').sort((x,y) => (x.date + (x.time||'')).localeCompare(y.date + (y.time||'')));
+  if (ts.length) return {e:ts[0], days:daysBetween(t, ts[0].date), date:ts[0].date, termin:true};
+  const r = reminders().filter(x => x.e.kind === 'pregled' && x.days <= 30)[0];
+  return r ? {e:r.e, days:r.days, date:r.e.nextDue, termin:false} : null;
+}
+function vetCard(){
+  const v = vetNext(), canAdd = S.canWrite && role() !== 'skrbnik';
+  if (!v) return canAdd ? `<button class="add-row vet-add" data-act="new-vet"><span class="plus">${I.steth}</span><span><b>Obisk veterinarja</b><small>Vpiši termin, pa se pokaže tukaj.</small></span></button>` : '';
+  const e = v.e, d = v.days;
+  const pill = d < 0 ? (v.termin ? '<span class="pill warn">Je bil opravljen?</span>' : `<span class="pill late">Zamuja ${-d} ${dni(-d)}</span>`)
+    : d === 0 ? `<span class="pill due">Danes${e.time ? ' ob ' + esc(e.time) : ''}</span>` : d === 1 ? `<span class="pill edge">Jutri${e.time ? ' ob ' + esc(e.time) : ''}</span>` : `<span class="pill edge">Čez ${d} ${dni(d)}</span>`;
+  let rel = '';
+  if (d === 0 && e.time) { const m = Math.round((at(v.date, e.time) - new Date()) / 60000); rel = m > 0 ? `Čez ${dur(m)}.` : m > -180 ? 'Zdaj ali pravkar.' : ''; }
+  let btn = '';
+  if (S.canWrite) btn = v.termin
+    ? (d <= 0 ? `<button class="btn-sm" data-act="vet-done" data-id="${esc(e.id)}">${I.check}Opravljeno</button>` : (canAdd ? `<button class="btn-sm" data-act="edit-event" data-id="${esc(e.id)}">${I.edit}Uredi</button>` : ''))
+    : `<button class="btn-sm" data-act="done-rem" data-id="${esc(e.id)}">${I.check}Opravljeno</button>`;
+  return `<div class="vp vetc${d < 0 && !v.termin ? ' is-late' : ''}"><span class="tile">${I.steth}</span><div class="rmain"><div class="vp-meta"><span>Veterinar · ${esc(fmtDayShort(v.date))}${e.time ? ` · <b style="color:var(--ink)">ob ${esc(e.time)}</b>` : ''}</span></div><div class="vp-name">${esc(e.title)}</div>${rel ? `<div class="vp-sub"><b>${rel}</b></div>` : ''}${v.termin && e.note ? `<div class="vp-sub">${esc(e.note)}</div>` : ''}</div><div class="rside">${pill}${btn}</div></div>`;
+}
+function vetForm(e){
+  const v = e || {date:ymd(addDays(new Date(), 1)), time:''};
+  openSheet(e ? 'Uredi obisk veterinarja' : 'Obisk veterinarja', `
+    <div class="field"><label class="lbl" for="v-title">Zakaj greš</label><input id="v-title" name="title" list="v-presets" required autocomplete="off" value="${esc(v.title)}" placeholder="npr. Kontrola ušesa"><datalist id="v-presets"><option value="Redni pregled"><option value="Kontrola"><option value="Cepljenje"><option value="Čiščenje zob"></datalist></div>
+    <div class="grid2"><div class="field"><label class="lbl" for="v-date">Datum</label><input id="v-date" type="date" name="date" required value="${esc(v.date)}"></div>
+    <div class="field"><label class="lbl" for="v-time">Ura</label><input id="v-time" type="time" name="time" value="${esc(v.time || '')}"></div></div>
+    <div class="field"><label class="lbl" for="v-note">Opomba</label><textarea id="v-note" name="note" rows="2" placeholder="npr. vzemi cepilno knjižico">${esc(v.note)}</textarea></div>
+    <p class="info">Termin se pokaže na vrhu zaslona Danes. Ko je obisk mimo, ga označiš kot opravljenega in se zapiše v Časovnico kot pregled.</p>`,
+    'Shrani', async fd => {
+      const title = val(fd,'title'), date = val(fd,'date');
+      if (!title) { toast('Vpiši, zakaj greš.'); return false; }
+      if (!date) { toast('Izberi datum.'); return false; }
+      const doc = {petId: e ? e.petId : S.petId, kind:'termin', title, date, time:val(fd,'time') || null, note:val(fd,'note'), by: e ? (e.by || null) : (S.me.id || null), createdAt: e ? (e.createdAt || Date.now()) : Date.now(), example:false};
+      return w(() => col('events').doc(e ? e.id : rid()).set(doc));
+    }, e ? delBtn('del-event', e.id) : '');
+}
 function todayHtml(){
   const now = new Date(), t = today();
   const slots = slotsFor(t);
@@ -880,9 +925,9 @@ function todayHtml(){
     h += '</section><section class="sec">';
     if (role() === 'skrbnik') h += emptyCard('Za danes ni ničesar na sporedu.', 'Ko lastnik doda obrok ali zdravilo, se pokaže tukaj.');
     else h += emptyCard('Za danes ni ničesar na sporedu.', 'Dodaj hranjenje ali zdravilo z uro, pa se pokaže tukaj.', S.canWrite ? `<div class="btns"><button class="btn btn-primary" data-act="new-sched">${I.plus}Hranjenje ali zdravilo</button>${canScan() ? `<button class="btn" data-act="scan-med">${I.cam}Slikaj ovojnico</button>` : ''}</div>` : '');
-    return h + '</section>';
+    return h + '</section>' + (vetNext() ? `<section class="sec">${vetCard()}</section>` : '');
   }
-  h += `<p class="today-sum">${esc(daySummary(slots, st))}</p>${nowCard(slots, st, now)}</section>`;
+  h += `<p class="today-sum">${esc(daySummary(slots, st))}</p>${(() => { const vn = vetNext(), top = vn && vn.days <= 0; return (top ? vetCard() : '') + nowCard(slots, st, now) + (top ? '' : vetCard()); })()}</section>`;
   const ni = nextIdx(st);
   const rest = slots.map((s,i) => [s, st[i], i]).filter(([s,x,i]) => x !== 'given' && i !== ni);
   const done = slots.map((s,i) => [s, st[i]]).filter(([s,x]) => x === 'given');
@@ -902,7 +947,8 @@ function inviteCard(){
 }
 function danesHtml(){
   let h = todayHtml();
-  const rem = reminders().filter(r => r.days <= 30);
+  const vn = vetNext();
+  const rem = reminders().filter(r => r.days <= 30 && !(vn && vn.e.id === r.e.id));
   const stock = stockWarnings();
   if (rem.length || stock.length) {
     h += `<section class="sec"><div class="sec-head"><h2>Prihaja</h2><a class="btn-add" href="#zdravje">Vsi roki${I.chevRight}</a></div><div class="rows">${stock.map(stockRow).join('')}${rem.map(remRow).join('')}</div></section>`;
@@ -1114,8 +1160,8 @@ function casovnicaHtml(){
   const F = {vse:null, cepljenje:['cepljenje'], pregled:['pregled'], zajedavci:['zajedavci'], opazanje:['opazanje'], teza:['teza']};
   const lab = {vse:'Vse', cepljenje:'Cepljenja', pregled:'Pregledi', zajedavci:'Zajedavci', opazanje:'Opažanja', teza:'Teža'};
   const f = Object.prototype.hasOwnProperty.call(F, S.filter) ? S.filter : 'vse';
-  const items = mine(S.events).filter(e => !F[f] || F[f].includes(e.kind)).sort((a,b) => (b.date + (b.time||'')).localeCompare(a.date + (a.time||'')) || (b.createdAt||0) - (a.createdAt||0));
-  let h = `<section class="sec"><div class="sec-head"><h2>Časovnica</h2>${S.canWrite ? `<div class="btns"><button class="btn-sm" data-act="new-note">${I.note}Opažanje</button><button class="btn-sm dark" data-act="new-event">${I.plus}Vpis</button></div>` : ''}</div>`;
+  const items = mine(S.events).filter(e => e.kind !== 'termin' && (!F[f] || F[f].includes(e.kind))).sort((a,b) => (b.date + (b.time||'')).localeCompare(a.date + (a.time||'')) || (b.createdAt||0) - (a.createdAt||0));
+  let h = `<section class="sec"><div class="sec-head"><h2>Časovnica</h2>${S.canWrite ? `<div class="btns"><button class="btn-sm" data-act="new-note">${I.note}Opažanje</button><button class="btn-sm" data-act="new-vet">${I.steth}Termin</button><button class="btn-sm dark" data-act="new-event">${I.plus}Vpis</button></div>` : ''}</div>`;
   h += `<div class="filters" role="group" aria-label="Pokaži">${Object.keys(F).map(k => `<button class="fchip" data-act="filter" data-f="${k}" aria-pressed="${k === f}">${lab[k]}</button>`).join('')}</div>`;
   if (!items.length) return h + emptyCard(f === 'vse' ? 'Časovnica je še prazna.' : 'Tu še ni vpisov.', 'Vpiši opažanje, ko se kaj spremeni. Veterinar bo vprašal, od kdaj in kako pogosto se dogaja.') + '</section>';
   let cur = '';
@@ -1713,9 +1759,11 @@ document.addEventListener('click', async ev => {
     case 'new-sched': schedForm(null); break;
     case 'edit-sched': { const s = byId(S.schedules, id); if (s) schedForm(s); break; }
     case 'new-event': eventForm(null); break;
+    case 'new-vet': vetForm(null); break;
+    case 'vet-done': { const e = byId(S.events, id); if (e && await w(() => col('events').doc(id).update({kind:'pregled'}))) toast('Obisk je zapisan v Časovnico.'); break; }
     case 'new-note': noteForm(null); break;
     case 'new-weight': weightForm(null); break;
-    case 'edit-event': { const e = byId(S.events, id); if (!e) break; if (e.kind === 'opazanje') noteForm(e); else if (e.kind === 'teza') weightForm(e); else eventForm(e); break; }
+    case 'edit-event': { const e = byId(S.events, id); if (!e) break; if (e.kind === 'opazanje') noteForm(e); else if (e.kind === 'termin') vetForm(e); else if (e.kind === 'teza') weightForm(e); else eventForm(e); break; }
     case 'done-rem': { const e = byId(S.events, id); if (e) eventForm(null, {kind:e.kind, title:e.title, date:today(), nextDue:nextFrom(e, today())}); break; }
     case 'copy-card': { const p = pet(); if (p) copyText(emergencyText(p), 'Kartica je kopirana.', $('#etext')); break; }
     case 'copy-phone': { const p = pet(); if (p && p.vetPhone) copyText(p.vetPhone, 'Številka je kopirana.'); break; }
