@@ -18,13 +18,10 @@ css_end = app.index('</style>', css_start) + len('</style>')
 css = app[css_start:css_end]
 body = app[css_end:]
 
-EXT = 'U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF'
-LAT = 'U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD'
 fonts = []
-for fam, slug, weights in (('Figtree', 'figtree', (400, 500, 600, 700)), ('Bricolage Grotesque', 'bricolage-grotesque', (600, 700))):
-    for w in weights:
-        fonts.append(f"@font-face{{font-family:'{fam}';font-style:normal;font-weight:{w};font-display:swap;src:url(fonts/{slug}-latin-ext-{w}-normal.woff2) format('woff2');unicode-range:{EXT}}}")
-        fonts.append(f"@font-face{{font-family:'{fam}';font-style:normal;font-weight:{w};font-display:swap;src:url(fonts/{slug}-latin-{w}-normal.woff2) format('woff2');unicode-range:{LAT}}}")
+for w in (400, 500, 600, 700):
+    fonts.append(f"@font-face{{font-family:'Barlow';font-style:normal;font-weight:{w};font-display:swap;src:url(fonts/barlow-latin-ext-{w}-normal.woff2) format('woff2');unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}}")
+    fonts.append(f"@font-face{{font-family:'Barlow';font-style:normal;font-weight:{w};font-display:swap;src:url(fonts/barlow-latin-{w}-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}}")
 
 head = f"""<!doctype html>
 <html lang="sl">
@@ -33,8 +30,8 @@ head = f"""<!doctype html>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Pasji utrip</title>
 <meta name="description" content="Hrana, zdravila in cepljenja za psa ali mačko. Vsi doma vidijo, kdo je kaj že dal.">
-<meta name="theme-color" content="#ECEAE6" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#151412" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F0F0EF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0F1715" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -42,7 +39,7 @@ head = f"""<!doctype html>
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Pasji utrip">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="preload" href="fonts/figtree-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/barlow-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <style>
 {chr(10).join(fonts)}
 :root{{color-scheme:light;padding-top:env(safe-area-inset-top,0px)}}
@@ -78,7 +75,7 @@ body = rep(body, "<ol class=\"steps\"><li>V meniju <b>Deli</b> dodaj osebo ${esc
 body = rep(body, "async function removeMember(id){\n", "async function removeMember(id){\n  if (SB && S.space) { const { error } = await SB.rpc('remove_member', { s: S.space, uid: id }); if (error) { toast('Odstranitev ni uspela. Poskusi znova.'); return; } }\n")
 body = rep(body, "  h += `<p class=\"hint\" style=\"padding-top:18px\">${S.mode === 'db' ? 'Zapisi se shranjujejo za vse, ki imajo dostop do te strani.' : 'Predogled: zapisi ostanejo samo v tem brskalniku.'}</p>`;",
            "  h += (S.mode === 'db' && AUTH.session) ? `<section class=\"sec\"><h2>Račun</h2><div class=\"card\"><p style=\"margin:0\">Prijavljen si kot <b>${esc(AUTH.session.user.email)}</b>. Zapisi so v bazi in jih vidijo vsi člani družine.</p><div><button class=\"btn\" data-act=\"logout\">Odjava</button></div></div></section>` : '<p class=\"hint\" style=\"padding-top:18px\">Predogled: zapisi ostanejo samo v tem brskalniku.</p>';")
-body = rep(body, "  return h + inviteCard();\n}\nfunction forecastForm", "  return h + installCard() + inviteCard();\n}\nfunction forecastForm")
+body = rep(body, "  return h + inviteCard();\n}", "  return h + installCard() + inviteCard();\n}")
 body = rep(body, "    case 'toggle-done': showDone = !showDone; render(); break;",
            "    case 'toggle-done': showDone = !showDone; render(); break;\n"
            "    case 'logout': if (armed(t, 'Res se odjavim?')) { if (SB) await SB.auth.signOut(); } break;\n"
